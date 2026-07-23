@@ -1,5 +1,5 @@
 // Painel de Viagem - cache offline
-const CACHE = 'painel-moto-v3';
+const CACHE = 'painel-moto-v4';
 
 const ARQUIVOS = [
   './',

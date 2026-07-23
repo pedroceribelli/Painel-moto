@@ -115,14 +115,21 @@ body{
 /* --- módulo principal --- */
 .primary{flex:1.5;display:flex;flex-direction:column;justify-content:center;
   padding:0 1.4rem;min-width:0;}
-.p-value{font-family:var(--display);font-weight:700;font-size:7.4rem;line-height:.86;
+.p-value{font-family:var(--display);font-weight:700;font-size:6.6rem;line-height:.88;
   font-variant-numeric:tabular-nums;letter-spacing:-.01em;white-space:nowrap;
-  margin-top:.3rem;text-shadow:0 .2rem 1.4rem rgba(0,0,0,.30);}
+  margin-top:.2rem;text-shadow:0 .2rem 1.4rem rgba(0,0,0,.30);}
 .p-value .unit{font-size:.24em;font-weight:600;color:var(--muted);margin-left:.12em;letter-spacing:.06em;}
 .p-value .sec{font-size:.28em;font-weight:600;color:var(--accent);margin-left:.12em;}
-.p-sub{margin-top:.7rem;font-size:1.3rem;color:var(--muted);letter-spacing:.02em;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums;}
-.p-sub b{color:var(--ink);font-weight:600;}
+.speed-row{display:flex;align-items:baseline;gap:.7rem;margin-top:.9rem;padding-top:.8rem;
+  border-top:1px solid var(--line);white-space:nowrap;}
+.sp-label{font-family:var(--display);font-size:1rem;font-weight:600;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--ink);opacity:.62;}
+.sp-value{font-family:var(--display);font-weight:700;font-size:3.4rem;line-height:1;
+  font-variant-numeric:tabular-nums;color:var(--ink);opacity:.45;
+  transition:opacity .4s ease,color .4s ease;}
+.sp-value.rodando{opacity:1;color:var(--accent);}
+.sp-state{font-size:1.1rem;color:var(--ink);opacity:.55;letter-spacing:.02em;
+  overflow:hidden;text-overflow:ellipsis;}
 
 /* --- coluna do meio --- */
 .mid{flex:1.05;min-width:0;}
@@ -219,9 +226,13 @@ body{
   <section class="grid">
 
     <div class="module primary">
-      <div class="m-label" id="mainLabel">Hora</div>
-      <div class="p-value" id="mainValue">--:--</div>
-      <div class="p-sub" id="mainSub">aguardando GPS</div>
+      <div class="m-label">Hora</div>
+      <div class="p-value" id="clockValue">--:--</div>
+      <div class="speed-row">
+        <span class="sp-label">Vel</span>
+        <span class="sp-value" id="speedValue">0<span class="unit">km/h</span></span>
+        <span class="sp-state" id="speedState">sem GPS</span>
+      </div>
     </div>
 
     <div class="col mid">
@@ -349,19 +360,17 @@ function updateSky(){
 /* ---------- display principal: hora quando parado, velocidade quando rodando ---------- */
 function updateMain(){
   const now = new Date();
-  const rodando = (Date.now() - lastMoveAt) < 9000 && speedKmh >= 3;
 
-  if(rodando){
-    $('mainLabel').textContent = 'Velocidade';
-    $('mainValue').innerHTML = Math.round(speedKmh) + '<span class="unit">km/h</span>';
-    $('mainSub').innerHTML = pad(now.getHours())+':'+pad(now.getMinutes())+
-      ' · trecho <b>'+trip.toFixed(1).replace('.',',')+' km</b>';
-  } else {
-    $('mainLabel').textContent = 'Hora';
-    $('mainValue').innerHTML = pad(now.getHours())+':'+pad(now.getMinutes())+
-      '<span class="sec">'+pad(now.getSeconds())+'</span>';
-    $('mainSub').textContent = speedKmh > 0 || lastFix ? 'parado · GPS ativo' : 'aguardando GPS';
-  }
+  // relógio: posição fixa, sempre visível
+  $('clockValue').innerHTML = pad(now.getHours())+':'+pad(now.getMinutes())+
+    '<span class="sec">'+pad(now.getSeconds())+'</span>';
+
+  // velocidade: linha própria, logo abaixo
+  const rodando = (Date.now() - lastMoveAt) < 9000 && speedKmh >= 3;
+  const vel = $('speedValue');
+  vel.innerHTML = Math.round(rodando ? speedKmh : 0) + '<span class="unit">km/h</span>';
+  vel.classList.toggle('rodando', rodando);
+  $('speedState').textContent = rodando ? 'rodando' : (lastFix ? 'parado' : 'sem GPS');
 
   const dias = ['dom','seg','ter','qua','qui','sex','sáb'];
   const meses = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
