@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover, user-scalable=no">
+<title>Painel de Viagem</title>
+
+<!-- instala como app (tela cheia, sem barra do navegador) -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1B1F1D">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Painel Moto">
+<link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B1F1D;
+    --ink-2:#242923;
+    --dust:#B9A67C;
+    --rust:#9C4A2C;
+    --moss:#5B6A4C;
+    --parchment:#EDE6D2;
+    --faded:#7C8570;
+    --line: rgba(237,230,210,0.14);
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+
+  html,body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:var(--ink);
+    font-family:'Work Sans',sans-serif;
+    color:var(--parchment);
+  }
+
+  body{
+    display:flex;
+    align-items:stretch;
+    position:relative;
+  }
+
+  /* ---------- background: adventure horizon ---------- */
+  .bg{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    background:
+      radial-gradient(ellipse 140% 90% at 30% -10%, rgba(156,74,44,0.35), transparent 60%),
+      linear-gradient(180deg, #262b24 0%, #1e2320 38%, #171a16 70%, #12140f 100%);
+  }
+  .bg::before{
+    /* distant mountain ridge */
+    content:"";
+    position:absolute;
+    left:0; right:0; bottom:26%;
+    height:34%;
+    background:
+      linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.25) 100%);
+    clip-path: polygon(0% 100%, 0% 55%, 6% 40%, 14% 58%, 22% 30%, 30% 52%, 38% 20%, 47% 48%, 55% 12%, 64% 46%, 73% 25%, 82% 50%, 90% 33%, 100% 50%, 100% 100%);
+    opacity:0.55;
+  }
+  .bg::after{
+    /* sun glow */
+    content:"";
+    position:absolute;
+    top:-8%; left:18%;
+    width:38vmax; height:38vmax;
+    background: radial-gradient(circle, rgba(184,120,70,0.30) 0%, rgba(184,120,70,0.08) 45%, transparent 70%);
+    border-radius:50%;
+  }
+
+  /* topographic contour texture, faint */
+  .contours{
+    position:fixed; inset:0; z-index:1; opacity:0.10; pointer-events:none;
+    background-image:
+      repeating-radial-gradient(circle at 80% 20%, transparent 0, transparent 38px, var(--dust) 39px, transparent 40px);
+    mix-blend-mode:overlay;
+  }
+
+  /* ---------- layout ---------- */
+  .panel{
+    position:relative;
+    z-index:2;
+    width:100%;
+    display:flex;
+    padding: 4vh 5vw;
+    gap:4vw;
+  }
+
+  .left{
+    flex:1.15;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
+
+  .eyebrow{
+    font-family:'Oswald',sans-serif;
+    font-weight:500;
+    letter-spacing:0.28em;
+    font-size:12px;
+    text-transform:uppercase;
+    color:var(--dust);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:2vh;
+  }
+  .eyebrow .dot{
+    width:6px;height:6px;border-radius:50%;
+    background:var(--rust);
+    box-shadow:0 0 8px var(--rust);
+  }
+
+  .clock{
+    font-family:'Oswald',sans-serif;
+    font-weight:600;
+    font-size:min(13vw, 108px);
+    line-height:0.95;
+    letter-spacing:0.01em;
+    font-variant-numeric: tabular-nums;
+    color:var(--parchment);
+    text-shadow: 0 2px 24px rgba(0,0,0,0.4);
+  }
+  .clock .sec{
+    font-size:0.32em;
+    color:var(--dust);
+    font-weight:500;
+    margin-left:6px;
+  }
+
+  .date-row{
+    margin-top:1.2vh;
+    font-size:15px;
+    letter-spacing:0.03em;
+    color:var(--faded);
+    text-transform:capitalize;
+    font-weight:400;
+  }
+
+  .divider{
+    margin:3vh 0 2.4vh;
+    width:64px;
+    height:2px;
+    background:linear-gradient(90deg, var(--rust), transparent);
+  }
+
+  .weather{
+    display:flex;
+    align-items:center;
+    gap:16px;
+  }
+  .weather-icon{
+    width:38px; height:38px;
+    flex-shrink:0;
+    stroke:var(--dust);
+  }
+  .weather-temp{
+    font-family:'Oswald',sans-serif;
+    font-size:26px;
+    font-weight:600;
+    color:var(--parchment);
+  }
+  .weather-desc{
+    font-size:13px;
+    color:var(--faded);
+    letter-spacing:0.02em;
+  }
+  .weather-sub{
+    display:flex;
+    flex-direction:column;
+    line-height:1.3;
+  }
+
+  /* ---------- right: CTA ---------- */
+  .right{
+    flex:0.85;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:stretch;
+  }
+
+  .cta{
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:14px;
+    padding:5vh 3vw;
+    border-radius:18px;
+    background:linear-gradient(160deg, rgba(237,230,210,0.06), rgba(237,230,210,0.02));
+    border:1px solid var(--line);
+    text-decoration:none;
+    color:var(--parchment);
+    transition:transform .15s ease, background .15s ease;
+  }
+  .cta:active{
+    transform:scale(0.97);
+    background:rgba(237,230,210,0.09);
+  }
+  .cta-icon{
+    width:46px;height:46px;
+    stroke:var(--rust);
+  }
+  .cta-label{
+    font-family:'Oswald',sans-serif;
+    font-weight:600;
+    font-size:19px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+  }
+  .cta-sub{
+    font-size:12px;
+    color:var(--faded);
+    letter-spacing:0.05em;
+  }
+  .cta-corner{
+    position:absolute;
+    top:14px; right:16px;
+    font-family:'Oswald',sans-serif;
+    font-size:11px;
+    letter-spacing:0.15em;
+    color:var(--moss);
+  }
+
+  /* ---------- bottom route line (signature) ---------- */
+  .route{
+    position:fixed;
+    left:0; right:0; bottom:0;
+    height:9vh;
+    z-index:2;
+    display:flex;
+    align-items:center;
+    padding:0 5vw;
+  }
+  .route svg{ width:100%; height:auto; display:block; }
+  .route-line{
+    stroke:var(--dust);
+    stroke-width:1.4;
+    fill:none;
+    stroke-dasharray:6 8;
+    opacity:0.45;
+  }
+  .route-marker{
+    fill:var(--rust);
+    filter:drop-shadow(0 0 5px rgba(156,74,44,0.7));
+    animation: travel 14s linear infinite;
+  }
+  @keyframes travel{
+    0%{ offset-distance:0%; }
+    100%{ offset-distance:100%; }
+  }
+  .route-marker-wrap{
+    offset-path:path('M0,20 C120,-10 260,50 400,20 C540,-10 680,50 820,20 C960,-10 1100,50 1200,20');
+    animation: travel 16s linear infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .route-marker-wrap{ animation:none; }
+  }
+
+  .footer-note{
+    position:fixed;
+    bottom:1.6vh; left:5vw;
+    z-index:2;
+    font-size:10px;
+    letter-spacing:0.12em;
+    color:var(--faded);
+    opacity:0.55;
+    text-transform:uppercase;
+  }
+</style>
+</head>
+<body>
+
+  <div class="bg"></div>
+  <div class="contours"></div>
+
+  <div class="panel">
+    <div class="left">
+      <div class="eyebrow"><span class="dot"></span>Painel de bordo</div>
+      <div class="clock" id="clock">--:--</div>
+      <div class="date-row" id="dateRow">carregando data…</div>
+
+      <div class="divider"></div>
+
+      <div class="weather" id="weatherBox">
+        <svg class="weather-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <line x1="12" y1="2" x2="12" y2="4"></line>
+          <line x1="12" y1="20" x2="12" y2="22"></line>
+          <line x1="4.2" y1="4.2" x2="5.6" y2="5.6"></line>
+          <line x1="18.4" y1="18.4" x2="19.8" y2="19.8"></line>
+          <line x1="2" y1="12" x2="4" y2="12"></line>
+          <line x1="20" y1="12" x2="22" y2="12"></line>
+          <line x1="4.2" y1="19.8" x2="5.6" y2="18.4"></line>
+          <line x1="18.4" y1="5.6" x2="19.8" y2="4.2"></line>
+        </svg>
+        <div class="weather-sub">
+          <div class="weather-temp" id="weatherTemp">--°</div>
+          <div class="weather-desc" id="weatherDesc">sem dados ainda</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="right">
+      <a class="cta" href="https://www.google.com/maps" id="mapsBtn">
+        <span class="cta-corner">GO</span>
+        <svg class="cta-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 10c0 6-9 12-9 12S3 16 3 10a9 9 0 1 1 18 0z"></path>
+          <circle cx="12" cy="10" r="3"></circle>
+        </svg>
+        <div class="cta-label">Abrir Maps</div>
+        <div class="cta-sub">Toque para navegar</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="route">
+    <svg viewBox="0 0 1200 40" preserveAspectRatio="none">
+      <path class="route-line" d="M0,20 C120,-10 260,50 400,20 C540,-10 680,50 820,20 C960,-10 1100,50 1200,20"></path>
+    </svg>
+  </div>
+  <div class="footer-note">Trip computer · offline ready</div>
+
+<script>
+  // ---------- clock ----------
+  function pad(n){ return n.toString().padStart(2,'0'); }
+
+  function updateClock(){
+    const now = new Date();
+    document.getElementById('clock').innerHTML =
+      pad(now.getHours()) + ':' + pad(now.getMinutes()) +
+      '<span class="sec">' + pad(now.getSeconds()) + '</span>';
+
+    const dias = ['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'];
+    const meses = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+    document.getElementById('dateRow').textContent =
+      dias[now.getDay()] + ', ' + now.getDate() + ' ' + meses[now.getMonth()];
+  }
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // ---------- weather (Open-Meteo, sem API key) ----------
+  const wmoDesc = {
+    0:'céu limpo',1:'poucas nuvens',2:'parcialmente nublado',3:'nublado',
+    45:'neblina',48:'neblina gelada',
+    51:'garoa leve',53:'garoa',55:'garoa forte',
+    61:'chuva leve',63:'chuva',65:'chuva forte',
+    71:'neve leve',73:'neve',75:'neve forte',
+    80:'chuva de verão',81:'chuva forte',82:'chuva intensa',
+    95:'tempestade',96:'tempestade c/ granizo',99:'tempestade forte'
+  };
+
+  function setWeather(temp, code){
+    document.getElementById('weatherTemp').textContent = Math.round(temp) + '°';
+    document.getElementById('weatherDesc').textContent = wmoDesc[code] || 'sem descrição';
+  }
+
+  function fetchWeather(lat, lon){
+    const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon + '&current_weather=true';
+    fetch(url).then(r => r.json()).then(data => {
+      if(data && data.current_weather){
+        setWeather(data.current_weather.temperature, data.current_weather.weathercode);
+        localStorage.setItem('lastWeather', JSON.stringify(data.current_weather));
+      }
+    }).catch(() => {
+      loadCachedWeather();
+    });
+  }
+
+  function loadCachedWeather(){
+    try{
+      const cached = JSON.parse(localStorage.getItem('lastWeather'));
+      if(cached){ setWeather(cached.temperature, cached.weathercode); }
+      else { document.getElementById('weatherDesc').textContent = 'sem sinal'; }
+    }catch(e){
+      document.getElementById('weatherDesc').textContent = 'sem sinal';
+    }
+  }
+
+  if('geolocation' in navigator){
+    navigator.geolocation.getCurrentPosition(
+      pos => fetchWeather(pos.coords.latitude, pos.coords.longitude),
+      () => loadCachedWeather(),
+      { timeout: 8000 }
+    );
+  } else {
+    loadCachedWeather();
+  }
+
+  // atualiza clima a cada 15 min se o app ficar aberto e tiver sinal
+  setInterval(() => {
+    if('geolocation' in navigator){
+      navigator.geolocation.getCurrentPosition(
+        pos => fetchWeather(pos.coords.latitude, pos.coords.longitude),
+        () => {}, { timeout: 8000 }
+      );
+    }
+  }, 15 * 60 * 1000);
+
+  // ---------- botão Maps: tenta abrir o app nativo no Android ----------
+  document.getElementById('mapsBtn').addEventListener('click', function(e){
+    e.preventDefault();
+    const intentUrl = 'intent://maps.google.com/maps#Intent;scheme=https;package=com.google.android.apps.maps;end';
+    window.location.href = intentUrl;
+    setTimeout(() => { window.location.href = 'https://www.google.com/maps'; }, 700);
+  });
+
+  // mantém a tela acordada enquanto possível
+  let wakeLock = null;
+  async function requestWakeLock(){
+    try{
+      if('wakeLock' in navigator){ wakeLock = await navigator.wakeLock.request('screen'); }
+    }catch(e){}
+  }
+  requestWakeLock();
+  document.addEventListener('visibilitychange', () => {
+    if(document.visibilityState === 'visible'){ requestWakeLock(); }
+  });
+
+  // ---------- trava a tela em paisagem quando aberto como app ----------
+  async function lockLandscape(){
+    try{
+      if(screen.orientation && screen.orientation.lock){
+        await screen.orientation.lock('landscape');
+      }
+    }catch(e){}
+  }
+  lockLandscape();
+
+  // ---------- service worker: funciona sem internet ----------
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    });
+  }
+</script>
+
+</body>
+</html>
