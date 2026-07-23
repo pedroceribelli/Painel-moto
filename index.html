@@ -115,12 +115,28 @@ body{
 /* --- módulo principal --- */
 .primary{flex:1.5;display:flex;flex-direction:column;justify-content:center;
   padding:0 1.4rem;min-width:0;}
-.p-value{font-family:var(--display);font-weight:700;font-size:6.6rem;line-height:.88;
+.p-value{font-family:var(--display);font-weight:700;font-size:6rem;line-height:.88;
   font-variant-numeric:tabular-nums;letter-spacing:-.01em;white-space:nowrap;
   margin-top:.2rem;text-shadow:0 .2rem 1.4rem rgba(0,0,0,.30);}
 .p-value .unit{font-size:.24em;font-weight:600;color:var(--muted);margin-left:.12em;letter-spacing:.06em;}
 .p-value .sec{font-size:.28em;font-weight:600;color:var(--accent);margin-left:.12em;}
-.speed-row{display:flex;align-items:baseline;gap:.7rem;margin-top:.9rem;padding-top:.8rem;
+.dest-row{display:flex;align-items:center;justify-content:space-between;gap:.8rem;
+  margin-top:.7rem;padding-top:.7rem;border-top:1px solid var(--line);cursor:pointer;
+  white-space:nowrap;min-width:0;}
+.dest-txt{display:flex;flex-direction:column;min-width:0;}
+.dest-k{font-family:var(--display);font-size:1rem;font-weight:600;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--ink);opacity:.62;}
+.dest-name{font-size:1.45rem;color:var(--ink);overflow:hidden;text-overflow:ellipsis;}
+.dest-right{display:flex;align-items:center;gap:.6rem;flex-shrink:0;}
+.dest-arrow{width:2.2rem;height:2.2rem;fill:var(--accent);
+  transition:transform .6s ease;}
+.dest-arrow[hidden]{display:none;}
+.dest-nums{display:flex;flex-direction:column;align-items:flex-end;}
+.dest-dist{font-family:var(--display);font-weight:700;font-size:2.1rem;line-height:1.05;
+  font-variant-numeric:tabular-nums;color:var(--ink);}
+.dest-eta{font-size:1.05rem;color:var(--ink);opacity:.6;font-variant-numeric:tabular-nums;}
+
+.speed-row{display:flex;align-items:baseline;gap:.7rem;margin-top:.7rem;padding-top:.7rem;
   border-top:1px solid var(--line);white-space:nowrap;}
 .sp-label{font-family:var(--display);font-size:1rem;font-weight:600;letter-spacing:.18em;
   text-transform:uppercase;color:var(--ink);opacity:.62;}
@@ -133,25 +149,10 @@ body{
 
 /* --- coluna do meio --- */
 .mid{flex:1.05;min-width:0;}
-.weather{flex:1.05;padding:.9rem 1rem;display:flex;flex-direction:column;justify-content:center;gap:.15rem;}
-.w-top{display:flex;align-items:baseline;gap:.6rem;}
-.w-temp{font-family:var(--display);font-weight:700;font-size:3.4rem;line-height:1.05;
-  font-variant-numeric:tabular-nums;}
-.w-feels{font-size:1.15rem;color:var(--muted);white-space:nowrap;}
-.w-desc{font-size:1.3rem;color:var(--ink);opacity:.9;white-space:nowrap;
-  overflow:hidden;text-overflow:ellipsis;}
-.w-wind{font-size:1.15rem;color:var(--muted);letter-spacing:.02em;white-space:nowrap;
-  overflow:hidden;text-overflow:ellipsis;}
-
-.rain{flex:1;padding:.9rem 1rem .7rem;display:flex;flex-direction:column;justify-content:space-between;}
-.bars{display:flex;align-items:flex-end;gap:.35rem;height:2.9rem;margin-top:.5rem;}
-.bar-wrap{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;}
-.bar-fill{width:100%;background:var(--muted);border-radius:.15rem .15rem 0 0;height:4%;
-  transition:height .9s cubic-bezier(.22,1,.36,1),background .4s ease;opacity:.5;}
-.bar-fill.wet{background:var(--accent);opacity:1;}
-.hours{display:flex;gap:.35rem;margin-top:.35rem;}
-.hours span{flex:1;text-align:center;font-size:.95rem;color:var(--muted);
-  font-variant-numeric:tabular-nums;}
+.weather{flex:1;padding:1rem;display:flex;flex-direction:column;justify-content:center;gap:.2rem;}
+.w-temp{font-family:var(--display);font-weight:700;font-size:5.2rem;line-height:1;
+  font-variant-numeric:tabular-nums;margin-top:.3rem;}
+.w-desc{font-size:1.35rem;color:var(--ink);opacity:.85;overflow:hidden;text-overflow:ellipsis;}
 
 /* --- botão maps --- */
 .cta{flex:.8;padding:0 .6rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.7rem;
@@ -229,6 +230,14 @@ body{
   font-variant-numeric:tabular-nums;}
 .row.hoje .km{color:var(--accent);}
 .vazio{padding:1.2rem 0;font-size:1.2rem;color:var(--ink);opacity:.55;}
+.campo{width:100%;padding:.7rem .8rem;font-family:var(--body);font-size:1.3rem;
+  color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:.5rem;}
+.campo:focus{outline:none;border-color:var(--accent);}
+.dica{font-size:1.05rem;color:var(--ink);opacity:.6;line-height:1.35;}
+.res{padding:.5rem 0;border-bottom:1px solid var(--line);font-size:1.2rem;cursor:pointer;}
+.res:last-child{border-bottom:0;}
+.res b{display:block;font-weight:600;}
+.res span{opacity:.6;font-size:.9em;}
 .sheet-actions{display:flex;gap:.6rem;}
 .sheet-actions button{flex:1;padding:.6rem;background:transparent;cursor:pointer;
   border:1px solid var(--line);border-radius:.5rem;color:var(--ink);
@@ -285,16 +294,17 @@ body{
             background:var(--line);opacity:1;color:var(--muted);}
 
   .mid{flex:1;gap:.6rem;min-height:0;}
-  .weather{flex:0 0 auto;padding:.6rem .9rem;gap:.1rem;}
-  .w-top{gap:.5rem;}
-  .w-temp{font-size:2.2rem;}
+  .weather{flex:1;padding:.6rem .9rem;gap:.05rem;}
+  .w-temp{font-size:2.4rem;margin-top:0;}
   .w-desc{font-size:1.05rem;}
-  .w-feels,.w-wind{font-size:.95rem;}
 
-  .rain{flex:1;min-height:0;padding:.6rem .9rem .5rem;}
-  .bars{height:2.2rem;gap:.3rem;}
-  .bar-fill{border-radius:.2rem .2rem 0 0;}
-  .hours span{font-size:.85rem;}
+  .dest-row{margin-top:.5rem;padding-top:.5rem;}
+  .dest-k{font-size:.85rem;letter-spacing:.04em;text-transform:none;font-weight:500;}
+  .dest-name{font-size:1.15rem;}
+  .dest-dist{font-size:1.5rem;}
+  .dest-eta{font-size:.9rem;}
+  .dest-arrow{width:1.6rem;height:1.6rem;}
+  .campo{font-size:1.15rem;border-radius:.5rem;}
 
   .strip{height:auto;padding:.55rem .9rem;gap:1rem;border-radius:.9rem;
          box-shadow:var(--sombra);}
@@ -323,7 +333,7 @@ body{
 
 /* faixa muito baixa (divisão em cima/embaixo com a tela deitada) */
 @media (max-height:250px){
-  .rain,.daylight{display:none;}
+  .daylight{display:none;}
   .p-value{font-size:3.6rem;}
   .weather{flex:1;}
 }
@@ -352,6 +362,22 @@ body{
     <div class="module primary">
       <div class="m-label">Hora</div>
       <div class="p-value" id="clockValue">--:--</div>
+      <div class="dest-row" id="destRow">
+        <div class="dest-txt">
+          <span class="dest-k">Indo para</span>
+          <span class="dest-name" id="destName">toque para definir</span>
+        </div>
+        <div class="dest-right">
+          <svg class="dest-arrow" id="destArrow" viewBox="0 0 24 24" hidden>
+            <path d="M12 3 L19 20 L12 16 L5 20 Z"></path>
+          </svg>
+          <div class="dest-nums">
+            <span class="dest-dist" id="destDist"></span>
+            <span class="dest-eta" id="destEta"></span>
+          </div>
+        </div>
+      </div>
+
       <div class="speed-row">
         <span class="sp-label">Vel</span>
         <span class="sp-value" id="speedValue">0<span class="unit">km/h</span></span>
@@ -362,18 +388,8 @@ body{
     <div class="col mid">
       <div class="module weather">
         <div class="m-label">Tempo agora</div>
-        <div class="w-top">
-          <span class="w-temp" id="wTemp">--°</span>
-          <span class="w-feels" id="wFeels">sensação --°</span>
-        </div>
+        <span class="w-temp" id="wTemp">--°</span>
         <div class="w-desc" id="wDesc">sem dados</div>
-        <div class="w-wind" id="wWind">vento --</div>
-      </div>
-
-      <div class="module rain">
-        <div class="m-label">Chuva · 6h</div>
-        <div class="bars" id="bars"></div>
-        <div class="hours" id="hours"></div>
       </div>
     </div>
 
@@ -404,6 +420,21 @@ body{
   </footer>
 
 </main>
+
+<div class="sheet" id="destSheet" hidden>
+  <div class="sheet-card">
+    <div class="sheet-head"><h2>Destino</h2></div>
+    <input id="destInput" class="campo" type="text" autocomplete="off"
+           placeholder="Cole o link do Maps ou digite o lugar">
+    <div class="dica" id="destDica">Com internet, ele busca a distância real da estrada. Sem internet, use um link do Maps com as coordenadas.</div>
+    <div class="sheet-list" id="destResults"></div>
+    <div class="sheet-actions">
+      <button id="destSet">Definir</button>
+      <button id="destClear" class="perigo">Limpar</button>
+      <button id="destClose">Fechar</button>
+    </div>
+  </div>
+</div>
 
 <div class="sheet" id="sheet" hidden>
   <div class="sheet-card">
@@ -555,6 +586,7 @@ function updateMain(){
   vel.innerHTML = Math.round(rodando ? speedKmh : 0) + '<span class="unit">km/h</span>';
   vel.classList.toggle('rodando', rodando);
   $('speedState').textContent = rodando ? 'rodando' : (lastFix ? 'parado' : 'sem GPS');
+  if(now.getSeconds() % 5 === 0) atualizaDestino();
 
   const dias = ['dom','seg','ter','qua','qui','sex','sáb'];
   const meses = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
@@ -592,13 +624,18 @@ function onFix(pos){
   if(v !== null){
     speedKmh = Math.max(0, v);
     if(speedKmh >= 3) lastMoveAt = Date.now();
+    // média só conta quando está realmente rodando
+    if(speedKmh >= 8) vMedia = vMedia ? (vMedia*0.9 + speedKmh*0.1) : speedKmh;
   }
+  if(c.heading !== null && !isNaN(c.heading) && speedKmh >= 8) heading = c.heading;
   if(c.altitude !== null && !isNaN(c.altitude)){
     $('altVal').innerHTML = Math.round(c.altitude)+'<small>m</small>';
   }
   lastFix = agora;
 
   if(!fetchWeather.feito){ fetchWeather(agora.lat, agora.lon); fetchWeather.feito = true; }
+  if(destino && !destino.fator) buscaRota();
+  atualizaDestino();
 }
 
 if('geolocation' in navigator){
@@ -639,6 +676,158 @@ function zeraTrecho(){
   box.addEventListener('mouseup', stop);
   box.addEventListener('mouseleave', stop);
 })();
+
+/* ---------- destino ---------- */
+let destino = null;
+try{ destino = JSON.parse(localStorage.getItem('destino') || 'null'); }catch(e){ destino = null; }
+let vMedia = 0;      // velocidade média em movimento, para estimar a chegada
+let heading = null;  // direção do aparelho, quando o GPS informa
+
+function rumo(a, b){
+  const rad = Math.PI/180;
+  const y = Math.sin((b.lon-a.lon)*rad) * Math.cos(b.lat*rad);
+  const x = Math.cos(a.lat*rad)*Math.sin(b.lat*rad) -
+            Math.sin(a.lat*rad)*Math.cos(b.lat*rad)*Math.cos((b.lon-a.lon)*rad);
+  return (Math.atan2(y,x)/rad + 360) % 360;
+}
+const ROSA = ['N','NE','L','SE','S','SO','O','NO'];
+
+function atualizaDestino(){
+  const nomeEl = $('destName'), distEl = $('destDist'), etaEl = $('destEta'), setaEl = $('destArrow');
+
+  if(!destino){
+    nomeEl.textContent = 'toque para definir';
+    distEl.textContent = ''; etaEl.textContent = '';
+    setaEl.hidden = true;
+    return;
+  }
+  nomeEl.textContent = destino.nome;
+
+  if(!lastFix){
+    distEl.textContent = '—'; etaEl.textContent = 'sem GPS'; setaEl.hidden = true;
+    return;
+  }
+
+  const alvo = {lat:destino.lat, lon:destino.lon};
+  const reta = haversine(lastFix, alvo);
+  const km = reta * (destino.fator || 1);
+  distEl.textContent = (km < 10 ? km.toFixed(1).replace('.',',') : Math.round(km)) + ' km';
+
+  const partes = [ROSA[Math.round(rumo(lastFix, alvo)/45) % 8]];
+  if(!destino.fator) partes.push('reta');
+  if(vMedia >= 8){
+    const chegada = new Date(Date.now() + (km/vMedia)*3600000);
+    partes.push(pad(chegada.getHours())+'h'+pad(chegada.getMinutes()));
+  }
+  etaEl.textContent = partes.join(' · ');
+
+  if(heading !== null){
+    setaEl.hidden = false;
+    setaEl.style.transform = 'rotate(' + (rumo(lastFix, alvo) - heading) + 'deg)';
+  } else {
+    setaEl.hidden = true;
+  }
+}
+
+function salvaDestino(){
+  try{ localStorage.setItem('destino', destino ? JSON.stringify(destino) : ''); }catch(e){}
+  atualizaDestino();
+}
+
+// busca a distância real de estrada (uma vez, com internet)
+function buscaRota(){
+  if(!destino || !lastFix || destino.fator) return;
+  const a = lastFix, b = destino;
+  const url = 'https://router.project-osrm.org/route/v1/driving/' +
+              a.lon+','+a.lat+';'+b.lon+','+b.lat+'?overview=false';
+  fetch(url).then(r => r.json()).then(j => {
+    if(j && j.routes && j.routes[0]){
+      const kmRota = j.routes[0].distance/1000;
+      const reta = haversine(a, {lat:b.lat, lon:b.lon});
+      if(reta > 0.5 && kmRota/reta < 4){
+        destino.kmRota = kmRota;
+        destino.fator = kmRota/reta;   // quanto a estrada serpenteia
+        salvaDestino();
+      }
+    }
+  }).catch(()=>{});
+}
+
+/* ---------- folha do destino ---------- */
+function abreDestino(){
+  $('destInput').value = '';
+  $('destResults').innerHTML = '';
+  $('destDica').textContent = destino
+    ? 'Atual: ' + destino.nome + (destino.kmRota ? ' · rota de ' + Math.round(destino.kmRota) + ' km' : ' · sem rota calculada')
+    : 'Com internet, ele busca a distância real da estrada. Sem internet, cole um link do Maps que tenha as coordenadas.';
+  $('destSheet').hidden = false;
+}
+
+function defineDestino(nome, lat, lon){
+  destino = {nome:nome, lat:lat, lon:lon, fator:null, kmRota:null};
+  salvaDestino();
+  buscaRota();
+  $('destSheet').hidden = true;
+}
+
+function coordsDoTexto(t){
+  const p = [
+    /@(-?\d+\.\d+),\s*(-?\d+\.\d+)/,
+    /!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/,
+    /[?&](?:q|destination|daddr)=(-?\d+\.\d+),\s*(-?\d+\.\d+)/,
+    /^\s*(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)\s*$/
+  ];
+  for(const re of p){
+    const m = t.match(re);
+    if(m) return {lat:parseFloat(m[1]), lon:parseFloat(m[2])};
+  }
+  return null;
+}
+
+$('destRow').addEventListener('click', abreDestino);
+$('destClose').addEventListener('click', () => { $('destSheet').hidden = true; });
+$('destSheet').addEventListener('click', e => { if(e.target.id === 'destSheet') $('destSheet').hidden = true; });
+$('destClear').addEventListener('click', () => {
+  destino = null; salvaDestino(); $('destSheet').hidden = true;
+});
+
+$('destSet').addEventListener('click', () => {
+  const txt = $('destInput').value.trim();
+  if(!txt) return;
+
+  const c = coordsDoTexto(txt);
+  if(c){
+    const nome = (txt.match(/maps\/place\/([^\/@]+)/) || [])[1];
+    defineDestino(nome ? decodeURIComponent(nome).replace(/\+/g,' ') : 'Destino', c.lat, c.lon);
+    return;
+  }
+
+  if(/goo\.gl|maps\.app/.test(txt)){
+    $('destDica').textContent = 'Esse link é encurtado e eu não consigo abrir. Abra ele no Maps, toque em compartilhar, copie o link longo (o que tem @ e números) — ou digite o nome do lugar.';
+    return;
+  }
+
+  $('destDica').textContent = 'Procurando…';
+  fetch('https://geocoding-api.open-meteo.com/v1/search?count=5&language=pt&format=json&name=' + encodeURIComponent(txt))
+    .then(r => r.json()).then(j => {
+      if(!j.results || !j.results.length){
+        $('destDica').textContent = 'Não encontrei esse lugar. Tente outro nome ou cole o link do Maps.';
+        return;
+      }
+      $('destDica').textContent = 'Toque no lugar certo:';
+      $('destResults').innerHTML = j.results.map((r,i) =>
+        '<div class="res" data-i="'+i+'"><b>'+r.name+'</b><span>'+
+        [r.admin1, r.country].filter(Boolean).join(' · ')+'</span></div>').join('');
+      [...$('destResults').querySelectorAll('.res')].forEach(el => {
+        el.addEventListener('click', () => {
+          const r = j.results[+el.dataset.i];
+          defineDestino(r.name, r.latitude, r.longitude);
+        });
+      });
+    }).catch(() => {
+      $('destDica').textContent = 'Sem internet para procurar pelo nome. Cole um link do Maps com as coordenadas.';
+    });
+});
 
 /* ---------- histórico de deslocamento ---------- */
 function rotuloData(chave){
@@ -701,25 +890,11 @@ const wmo = {
   85:'pancada de neve',86:'nevasca',95:'tempestade',96:'tempestade c/ granizo',99:'tempestade forte'
 };
 
-function pintaClima(d){
-  if(d.temp !== undefined) $('wTemp').textContent = Math.round(d.temp)+'°';
-  if(d.feels !== undefined) $('wFeels').textContent = 'sensação '+Math.round(d.feels)+'°';
-  if(d.code !== undefined) $('wDesc').textContent = wmo[d.code] || '—';
-  if(d.wind !== undefined) $('wWind').textContent = 'vento '+Math.round(d.wind)+' km/h';
-
-  if(d.chuva && d.chuva.length){
-    const bars = $('bars'), hours = $('hours');
-    if(!bars.children.length){
-      bars.innerHTML = d.chuva.map(() => '<div class="bar-wrap"><div class="bar-fill"></div></div>').join('');
-      hours.innerHTML = d.chuva.map(h => '<span>'+h.hora+'</span>').join('');
-    }
-    [...bars.querySelectorAll('.bar-fill')].forEach((el,i) => {
-      const p = d.chuva[i] ? d.chuva[i].prob : 0;
-      el.style.height = Math.max(4, p) + '%';
-      el.classList.toggle('wet', p >= 40);
-    });
+function pintaClima(d, offline){
+  if(d.temp !== undefined && d.temp !== null) $('wTemp').textContent = Math.round(d.temp)+'°';
+  if(d.code !== undefined && d.code !== null){
+    $('wDesc').textContent = (wmo[d.code] || '—') + (offline ? ' · sem sinal' : '');
   }
-
   if(d.sunrise) sunrise = new Date(d.sunrise);
   if(d.sunset)  sunset  = new Date(d.sunset);
   updateSky();
@@ -727,28 +902,13 @@ function pintaClima(d){
 
 function fetchWeather(lat, lon){
   const url = 'https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+
-    '&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m'+
-    '&hourly=precipitation_probability&daily=sunrise,sunset'+
+    '&current=temperature_2m,weather_code&daily=sunrise,sunset'+
     '&forecast_days=2&timezone=auto';
 
   fetch(url).then(r => r.json()).then(j => {
-    const agora = new Date();
-    let chuva = [];
-    if(j.hourly && j.hourly.time){
-      const i0 = j.hourly.time.findIndex(t => new Date(t) > agora);
-      for(let i = Math.max(i0,0); i < Math.max(i0,0)+6 && i < j.hourly.time.length; i++){
-        chuva.push({
-          hora: pad(new Date(j.hourly.time[i]).getHours())+'h',
-          prob: j.hourly.precipitation_probability[i] ?? 0
-        });
-      }
-    }
     const dados = {
       temp:  j.current && j.current.temperature_2m,
-      feels: j.current && j.current.apparent_temperature,
       code:  j.current && j.current.weather_code,
-      wind:  j.current && j.current.wind_speed_10m,
-      chuva: chuva,
       sunrise: j.daily && j.daily.sunrise && j.daily.sunrise[0],
       sunset:  j.daily && j.daily.sunset  && j.daily.sunset[0],
       salvoEm: Date.now()
@@ -762,9 +922,7 @@ function carregaClimaSalvo(){
   try{
     const d = JSON.parse(localStorage.getItem('clima'));
     if(d){
-      pintaClima(d);
-      const h = Math.round((Date.now() - (d.salvoEm||0))/3600000);
-      $('wWind').textContent = 'vento '+Math.round(d.wind||0)+' km/h · sem sinal'+(h?' ('+h+'h)':'');
+      pintaClima(d, true);
     } else {
       $('wDesc').textContent = 'sem sinal';
     }
@@ -813,6 +971,7 @@ document.addEventListener('visibilitychange', () => {
 $('tripVal').innerHTML = trip.toFixed(1).replace('.',',')+'<small>km</small>';
 updateMain();
 updateSky();
+atualizaDestino();
 setInterval(updateMain, 1000);
 setInterval(updateSky, 60000);
 
