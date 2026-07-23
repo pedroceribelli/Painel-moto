@@ -236,6 +236,97 @@ body{
   letter-spacing:.12em;text-transform:uppercase;}
 .sheet-actions button.perigo{border-color:var(--accent);color:var(--accent);}
 .sheet-actions button:active{background:var(--accent-soft);}
+
+/* ================================================================
+   MODO COPILOTO — entra sozinho em tela dividida (pouca largura
+   ou formato quase quadrado). Some o botão do Maps e a interface
+   assume a linguagem visual do Google Maps.
+   ================================================================ */
+@media (max-width:560px), (max-aspect-ratio:13/10), (max-height:280px){
+
+  body{ --display:'Roboto',system-ui,sans-serif; --body:'Roboto',system-ui,sans-serif;
+        font-size:clamp(11px,3.6vh,16px); }
+
+  body.t-dia, body.t-tarde{
+    --surface:#FFFFFF; --ink:#202124; --muted:#5F6368; --line:#DADCE0;
+    --accent:#1A73E8; --mod-bg:#FFFFFF; --strip-bg:#FFFFFF; --card:#FFFFFF;
+    --sombra:0 1px 3px rgba(60,64,67,.25);
+  }
+  body.t-noite{
+    --surface:#202124; --ink:#E8EAED; --muted:#9AA0A6; --line:#3C4043;
+    --accent:#8AB4F8; --mod-bg:#292A2D; --strip-bg:#292A2D; --card:#202124;
+    --sombra:none;
+  }
+
+  body{background:var(--surface);}
+  .sky,.grain{display:none;}
+  .cta{display:none;}                    /* o Maps já está do lado */
+
+  .panel{padding:.7rem;gap:.6rem;}
+  .bar{font-size:1rem;letter-spacing:.06em;text-transform:none;font-weight:500;}
+  .brand{display:none;}
+  .date{order:1;} .batt{order:2;}
+
+  .grid{flex-direction:column;gap:.6rem;}
+  .module{background:var(--mod-bg);border:1px solid var(--line);border-radius:.9rem;
+          box-shadow:var(--sombra);}
+  .module::before{display:none;}
+  .m-label{font-size:.95rem;letter-spacing:.04em;text-transform:none;font-weight:500;}
+
+  .primary{flex:0 0 auto;padding:.7rem .9rem;}
+  .p-value{font-size:4.6rem;line-height:1;margin-top:.1rem;text-shadow:none;letter-spacing:-.02em;}
+  .p-value .sec{font-size:.3em;color:var(--muted);}
+  .speed-row{margin-top:.5rem;padding-top:.5rem;gap:.5rem;}
+  .sp-label{display:none;}
+  .sp-value{font-size:2.4rem;opacity:.4;}
+  .sp-value.rodando{color:var(--ink);opacity:1;}
+  .sp-value .unit{font-size:.32em;}
+  .sp-state{margin-left:auto;font-size:.95rem;padding:.15rem .6rem;border-radius:99px;
+            background:var(--line);opacity:1;color:var(--muted);}
+
+  .mid{flex:1;gap:.6rem;min-height:0;}
+  .weather{flex:0 0 auto;padding:.6rem .9rem;gap:.1rem;}
+  .w-top{gap:.5rem;}
+  .w-temp{font-size:2.2rem;}
+  .w-desc{font-size:1.05rem;}
+  .w-feels,.w-wind{font-size:.95rem;}
+
+  .rain{flex:1;min-height:0;padding:.6rem .9rem .5rem;}
+  .bars{height:2.2rem;gap:.3rem;}
+  .bar-fill{border-radius:.2rem .2rem 0 0;}
+  .hours span{font-size:.85rem;}
+
+  .strip{height:auto;padding:.55rem .9rem;gap:1rem;border-radius:.9rem;
+         box-shadow:var(--sombra);}
+  .stat .k{font-size:.85rem;letter-spacing:.04em;text-transform:none;font-weight:500;opacity:.75;}
+  .stat .v{font-size:1.4rem;}
+  .daylight{gap:.3rem;}
+  .dl-top{font-size:.85rem;letter-spacing:.04em;text-transform:none;font-weight:500;}
+  .dl-track{height:.28rem;}
+  .dl-fill{background:var(--accent);}
+
+  .sheet-card{background:var(--card);}
+  .sheet-head h2{font-size:1.3rem;letter-spacing:.04em;text-transform:none;}
+  .sheet-actions button{border-radius:99px;text-transform:none;letter-spacing:.03em;}
+}
+
+/* tela larga e baixa: usa o visual compacto, mas mantém o botão do Maps
+   (pode ser um aparelho pequeno em tela cheia, e aí o botão faz falta) */
+@media (min-width:561px) and (min-aspect-ratio:13/10){
+  .cta{display:flex;flex:.55;gap:.4rem;}
+  .cta-icon{width:2rem;height:2rem;}
+  .cta-label{font-size:1.15rem;}
+  .cta-sub{display:none;}
+  .grid{flex-direction:row;}
+  .mid{flex:1;}
+}
+
+/* faixa muito baixa (divisão em cima/embaixo com a tela deitada) */
+@media (max-height:250px){
+  .rain,.daylight{display:none;}
+  .p-value{font-size:3.6rem;}
+  .weather{flex:1;}
+}
 </style>
 </head>
 <body class="t-dia">
