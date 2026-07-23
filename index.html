@@ -5,446 +5,561 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover, user-scalable=no">
 <title>Painel de Viagem</title>
 
-<!-- instala como app (tela cheia, sem barra do navegador) -->
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1B1F1D">
+<meta name="theme-color" content="#0E1113">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Painel Moto">
 <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
 <link rel="icon" type="image/png" href="icon-192.png">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+
 <style>
-  :root{
-    --ink:#1B1F1D;
-    --ink-2:#242923;
-    --dust:#B9A67C;
-    --rust:#9C4A2C;
-    --moss:#5B6A4C;
-    --parchment:#EDE6D2;
-    --faded:#7C8570;
-    --line: rgba(237,230,210,0.14);
-  }
+/* ============ TEMAS ============ */
+:root{
+  /* escala fluida: tudo em rem, ancorado na altura da tela */
+  font-size: clamp(9px, 3.4vh, 18px);
+  --display:'Saira Condensed','Arial Narrow',sans-serif;
+  --body:'Barlow','Helvetica Neue',sans-serif;
+  --radius:0.9rem;
+}
 
-  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body.t-dia{
+  --sky-1:#8FA9B8; --sky-2:#C9C3AE; --sky-3:#E4DCC6;
+  --ridge-far:#7D8478; --ridge-near:#4A5347;
+  --ink:#16191A; --muted:#4E5750;
+  --accent:#A8461F; --accent-soft:rgba(168,70,31,0.16);
+  --sun:#FFF3D6; --sun-glow:rgba(255,236,190,0.75);
+  --mod-bg:rgba(255,255,255,0.32); --line:rgba(22,25,26,0.20);
+  --star:0;
+}
+body.t-tarde{
+  --sky-1:#2E3340; --sky-2:#8A4A2E; --sky-3:#D2793C;
+  --ridge-far:#453B36; --ridge-near:#241E1C;
+  --ink:#F6ECD8; --muted:#C3A98E;
+  --accent:#FF8A45; --accent-soft:rgba(255,138,69,0.16);
+  --sun:#FFD9A0; --sun-glow:rgba(255,168,90,0.55);
+  --mod-bg:rgba(20,16,14,0.34); --line:rgba(246,236,216,0.18);
+  --star:0.35;
+}
+body.t-noite{
+  --sky-1:#070A0E; --sky-2:#0D141B; --sky-3:#141A18;
+  --ridge-far:#131A1B; --ridge-near:#080B0C;
+  --ink:#F0DFC0; --muted:#9A9480;
+  --accent:#E2A24A; --accent-soft:rgba(226,162,74,0.14);
+  --sun:#DCE3EA; --sun-glow:rgba(190,205,220,0.30);
+  --mod-bg:rgba(255,255,255,0.05); --line:rgba(240,223,192,0.15);
+  --star:1;
+}
 
-  html,body{
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    background:var(--ink);
-    font-family:'Work Sans',sans-serif;
-    color:var(--parchment);
-  }
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;height:100%;overflow:hidden;}
+body{
+  background:var(--sky-1);
+  font-family:var(--body);
+  color:var(--ink);
+  transition:color .8s ease, background .8s ease;
+  user-select:none;
+}
 
-  body{
-    display:flex;
-    align-items:stretch;
-    position:relative;
-  }
+/* ============ CÉU ============ */
+.sky{position:fixed;inset:0;z-index:0;
+  background:linear-gradient(180deg,var(--sky-1) 0%,var(--sky-2) 58%,var(--sky-3) 100%);
+  transition:background .8s ease;}
+.sun{position:absolute;width:14vh;height:14vh;border-radius:50%;
+  background:radial-gradient(circle,var(--sun) 0%,var(--sun) 34%,var(--sun-glow) 40%,transparent 72%);
+  transform:translate(-50%,-50%);transition:left 1s linear,top 1s linear;}
+.stars{position:absolute;inset:0;opacity:var(--star);transition:opacity 1s ease;}
+.star{position:absolute;background:#F0DFC0;border-radius:50%;animation:tw 4s ease-in-out infinite;}
+@keyframes tw{0%,100%{opacity:.25}50%{opacity:.9}}
 
-  /* ---------- background: adventure horizon ---------- */
-  .bg{
-    position:fixed;
-    inset:0;
-    z-index:0;
-    background:
-      radial-gradient(ellipse 140% 90% at 30% -10%, rgba(156,74,44,0.35), transparent 60%),
-      linear-gradient(180deg, #262b24 0%, #1e2320 38%, #171a16 70%, #12140f 100%);
-  }
-  .bg::before{
-    /* distant mountain ridge */
-    content:"";
-    position:absolute;
-    left:0; right:0; bottom:26%;
-    height:34%;
-    background:
-      linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.25) 100%);
-    clip-path: polygon(0% 100%, 0% 55%, 6% 40%, 14% 58%, 22% 30%, 30% 52%, 38% 20%, 47% 48%, 55% 12%, 64% 46%, 73% 25%, 82% 50%, 90% 33%, 100% 50%, 100% 100%);
-    opacity:0.55;
-  }
-  .bg::after{
-    /* sun glow */
-    content:"";
-    position:absolute;
-    top:-8%; left:18%;
-    width:38vmax; height:38vmax;
-    background: radial-gradient(circle, rgba(184,120,70,0.30) 0%, rgba(184,120,70,0.08) 45%, transparent 70%);
-    border-radius:50%;
-  }
+.ridge{position:absolute;left:0;right:0;}
+.ridge-far{bottom:24%;height:26%;background:var(--ridge-far);opacity:.75;
+  clip-path:polygon(0 100%,0 62%,8% 44%,17% 66%,26% 34%,36% 58%,45% 26%,55% 54%,64% 30%,74% 58%,84% 38%,92% 60%,100% 44%,100% 100%);}
+.ridge-near{bottom:0;height:34%;background:var(--ridge-near);
+  clip-path:polygon(0 100%,0 52%,10% 66%,20% 46%,31% 70%,42% 50%,52% 72%,63% 48%,73% 68%,84% 52%,93% 70%,100% 56%,100% 100%);}
 
-  /* topographic contour texture, faint */
-  .contours{
-    position:fixed; inset:0; z-index:1; opacity:0.10; pointer-events:none;
-    background-image:
-      repeating-radial-gradient(circle at 80% 20%, transparent 0, transparent 38px, var(--dust) 39px, transparent 40px);
-    mix-blend-mode:overlay;
-  }
+.grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.20;mix-blend-mode:overlay;
+  background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 1px,transparent 1px 3px);}
 
-  /* ---------- layout ---------- */
-  .panel{
-    position:relative;
-    z-index:2;
-    width:100%;
-    display:flex;
-    padding: 4vh 5vw;
-    gap:4vw;
-  }
+/* ============ ESTRUTURA ============ */
+.panel{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;
+  padding:1.1rem 1.5rem;gap:.9rem;}
 
-  .left{
-    flex:1.15;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-  }
+.bar{display:flex;align-items:center;justify-content:space-between;
+  font-family:var(--display);font-weight:600;font-size:1.15rem;
+  letter-spacing:.2em;text-transform:uppercase;color:var(--muted);flex-shrink:0;}
+.brand{display:flex;align-items:center;gap:.55rem;}
+.dot{width:.55rem;height:.55rem;border-radius:50%;background:var(--accent);
+  box-shadow:0 0 .6rem var(--accent);animation:pulse 3.4s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.batt{font-variant-numeric:tabular-nums;}
 
-  .eyebrow{
-    font-family:'Oswald',sans-serif;
-    font-weight:500;
-    letter-spacing:0.28em;
-    font-size:12px;
-    text-transform:uppercase;
-    color:var(--dust);
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin-bottom:2vh;
-  }
-  .eyebrow .dot{
-    width:6px;height:6px;border-radius:50%;
-    background:var(--rust);
-    box-shadow:0 0 8px var(--rust);
-  }
+.grid{flex:1;display:flex;gap:1rem;min-height:0;}
+.col{display:flex;flex-direction:column;gap:.9rem;min-width:0;}
 
-  .clock{
-    font-family:'Oswald',sans-serif;
-    font-weight:600;
-    font-size:min(13vw, 108px);
-    line-height:0.95;
-    letter-spacing:0.01em;
-    font-variant-numeric: tabular-nums;
-    color:var(--parchment);
-    text-shadow: 0 2px 24px rgba(0,0,0,0.4);
-  }
-  .clock .sec{
-    font-size:0.32em;
-    color:var(--dust);
-    font-weight:500;
-    margin-left:6px;
-  }
+.module{background:var(--mod-bg);border:1px solid var(--line);border-radius:var(--radius);
+  position:relative;overflow:hidden;transition:background .8s ease,border-color .8s ease;}
+.module::before{content:"";position:absolute;top:0;left:8%;right:8%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--line),transparent);}
+.m-label{font-family:var(--display);font-size:1.05rem;font-weight:600;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--muted);white-space:nowrap;}
 
-  .date-row{
-    margin-top:1.2vh;
-    font-size:15px;
-    letter-spacing:0.03em;
-    color:var(--faded);
-    text-transform:capitalize;
-    font-weight:400;
-  }
+/* --- módulo principal --- */
+.primary{flex:1.5;display:flex;flex-direction:column;justify-content:center;
+  padding:0 1.4rem;min-width:0;}
+.p-value{font-family:var(--display);font-weight:700;font-size:7.4rem;line-height:.86;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em;white-space:nowrap;
+  margin-top:.3rem;text-shadow:0 .2rem 1.4rem rgba(0,0,0,.30);}
+.p-value .unit{font-size:.24em;font-weight:600;color:var(--muted);margin-left:.12em;letter-spacing:.06em;}
+.p-value .sec{font-size:.28em;font-weight:600;color:var(--accent);margin-left:.12em;}
+.p-sub{margin-top:.7rem;font-size:1.3rem;color:var(--muted);letter-spacing:.02em;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums;}
+.p-sub b{color:var(--ink);font-weight:600;}
 
-  .divider{
-    margin:3vh 0 2.4vh;
-    width:64px;
-    height:2px;
-    background:linear-gradient(90deg, var(--rust), transparent);
-  }
+/* --- coluna do meio --- */
+.mid{flex:1.05;min-width:0;}
+.weather{flex:1.05;padding:.9rem 1rem;display:flex;flex-direction:column;justify-content:center;gap:.15rem;}
+.w-top{display:flex;align-items:baseline;gap:.6rem;}
+.w-temp{font-family:var(--display);font-weight:700;font-size:3.4rem;line-height:1.05;
+  font-variant-numeric:tabular-nums;}
+.w-feels{font-size:1.15rem;color:var(--muted);white-space:nowrap;}
+.w-desc{font-size:1.3rem;color:var(--ink);opacity:.9;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;}
+.w-wind{font-size:1.15rem;color:var(--muted);letter-spacing:.02em;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;}
 
-  .weather{
-    display:flex;
-    align-items:center;
-    gap:16px;
-  }
-  .weather-icon{
-    width:38px; height:38px;
-    flex-shrink:0;
-    stroke:var(--dust);
-  }
-  .weather-temp{
-    font-family:'Oswald',sans-serif;
-    font-size:26px;
-    font-weight:600;
-    color:var(--parchment);
-  }
-  .weather-desc{
-    font-size:13px;
-    color:var(--faded);
-    letter-spacing:0.02em;
-  }
-  .weather-sub{
-    display:flex;
-    flex-direction:column;
-    line-height:1.3;
-  }
+.rain{flex:1;padding:.9rem 1rem .7rem;display:flex;flex-direction:column;justify-content:space-between;}
+.bars{display:flex;align-items:flex-end;gap:.35rem;height:2.9rem;margin-top:.5rem;}
+.bar-wrap{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;}
+.bar-fill{width:100%;background:var(--muted);border-radius:.15rem .15rem 0 0;height:4%;
+  transition:height .9s cubic-bezier(.22,1,.36,1),background .4s ease;opacity:.5;}
+.bar-fill.wet{background:var(--accent);opacity:1;}
+.hours{display:flex;gap:.35rem;margin-top:.35rem;}
+.hours span{flex:1;text-align:center;font-size:.95rem;color:var(--muted);
+  font-variant-numeric:tabular-nums;}
 
-  /* ---------- right: CTA ---------- */
-  .right{
-    flex:0.85;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:stretch;
-  }
+/* --- botão maps --- */
+.cta{flex:.8;padding:0 .6rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.7rem;
+  text-decoration:none;color:var(--ink);background:var(--accent-soft);
+  border:1px solid var(--accent);cursor:pointer;
+  transition:transform .12s ease,background .12s ease;}
+.cta:active{transform:scale(.975);background:var(--accent);}
+.cta-icon{width:3.2rem;height:3.2rem;stroke:var(--accent);fill:none;stroke-width:1.7;
+  stroke-linecap:round;stroke-linejoin:round;}
+.cta-label{font-family:var(--display);font-weight:700;font-size:1.55rem;letter-spacing:.04em;
+  text-transform:uppercase;white-space:nowrap;}
+.cta-sub{font-size:1.05rem;color:var(--muted);letter-spacing:.03em;white-space:nowrap;}
 
-  .cta{
-    position:relative;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:14px;
-    padding:5vh 3vw;
-    border-radius:18px;
-    background:linear-gradient(160deg, rgba(237,230,210,0.06), rgba(237,230,210,0.02));
-    border:1px solid var(--line);
-    text-decoration:none;
-    color:var(--parchment);
-    transition:transform .15s ease, background .15s ease;
-  }
-  .cta:active{
-    transform:scale(0.97);
-    background:rgba(237,230,210,0.09);
-  }
-  .cta-icon{
-    width:46px;height:46px;
-    stroke:var(--rust);
-  }
-  .cta-label{
-    font-family:'Oswald',sans-serif;
-    font-weight:600;
-    font-size:19px;
-    letter-spacing:0.08em;
-    text-transform:uppercase;
-  }
-  .cta-sub{
-    font-size:12px;
-    color:var(--faded);
-    letter-spacing:0.05em;
-  }
-  .cta-corner{
-    position:absolute;
-    top:14px; right:16px;
-    font-family:'Oswald',sans-serif;
-    font-size:11px;
-    letter-spacing:0.15em;
-    color:var(--moss);
-  }
+/* ============ RODAPÉ ============ */
+.strip{display:flex;align-items:center;gap:1.6rem;height:3.6rem;padding:0 .3rem;flex-shrink:0;}
+.stat{display:flex;flex-direction:column;gap:.15rem;flex-shrink:0;}
+.stat .k{font-family:var(--display);font-size:.95rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--muted);white-space:nowrap;}
+.stat .v{font-family:var(--display);font-weight:600;font-size:1.9rem;line-height:1;
+  font-variant-numeric:tabular-nums;white-space:nowrap;}
+.stat .v small{font-size:.52em;color:var(--muted);font-weight:500;margin-left:.15em;}
+.trip{position:relative;}
+.trip.holding .v{color:var(--accent);}
 
-  /* ---------- bottom route line (signature) ---------- */
-  .route{
-    position:fixed;
-    left:0; right:0; bottom:0;
-    height:9vh;
-    z-index:2;
-    display:flex;
-    align-items:center;
-    padding:0 5vw;
-  }
-  .route svg{ width:100%; height:auto; display:block; }
-  .route-line{
-    stroke:var(--dust);
-    stroke-width:1.4;
-    fill:none;
-    stroke-dasharray:6 8;
-    opacity:0.45;
-  }
-  .route-marker{
-    fill:var(--rust);
-    filter:drop-shadow(0 0 5px rgba(156,74,44,0.7));
-    animation: travel 14s linear infinite;
-  }
-  @keyframes travel{
-    0%{ offset-distance:0%; }
-    100%{ offset-distance:100%; }
-  }
-  .route-marker-wrap{
-    offset-path:path('M0,20 C120,-10 260,50 400,20 C540,-10 680,50 820,20 C960,-10 1100,50 1200,20');
-    animation: travel 16s linear infinite;
-  }
+.daylight{flex:1;display:flex;flex-direction:column;gap:.45rem;min-width:0;}
+.dl-top{display:flex;justify-content:space-between;gap:.8rem;font-family:var(--display);
+  font-size:.95rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);white-space:nowrap;}
+.dl-top span:last-child{overflow:hidden;text-overflow:ellipsis;}
+.dl-track{height:.35rem;background:var(--line);border-radius:99px;overflow:hidden;}
+.dl-fill{height:100%;width:0;border-radius:99px;
+  background:linear-gradient(90deg,var(--accent),var(--sun));
+  transition:width 1.2s cubic-bezier(.22,1,.36,1);}
 
-  @media (prefers-reduced-motion: reduce){
-    .route-marker-wrap{ animation:none; }
-  }
+/* ============ IGNIÇÃO ============ */
+.module,.strip>*{opacity:0;transform:translateY(.6rem);
+  animation:rise .55s cubic-bezier(.22,1,.36,1) forwards;}
+.primary{animation-delay:.05s}
+.mid{animation-delay:.14s}
+.cta{animation-delay:.22s}
+.strip>*:nth-child(1){animation-delay:.30s}
+.strip>*:nth-child(2){animation-delay:.36s}
+.strip>*:nth-child(3){animation-delay:.42s}
+@keyframes rise{to{opacity:1;transform:none;}}
 
-  .footer-note{
-    position:fixed;
-    bottom:1.6vh; left:5vw;
-    z-index:2;
-    font-size:10px;
-    letter-spacing:0.12em;
-    color:var(--faded);
-    opacity:0.55;
-    text-transform:uppercase;
-  }
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;}
+  .module,.strip>*{opacity:1;transform:none;}
+}
 </style>
 </head>
-<body>
+<body class="t-dia">
 
-  <div class="bg"></div>
-  <div class="contours"></div>
+<div class="sky">
+  <div class="stars" id="stars"></div>
+  <div class="sun" id="sun" style="left:50%;top:30%"></div>
+  <div class="ridge ridge-far"></div>
+  <div class="ridge ridge-near"></div>
+</div>
+<div class="grain"></div>
 
-  <div class="panel">
-    <div class="left">
-      <div class="eyebrow"><span class="dot"></span>Painel de bordo</div>
-      <div class="clock" id="clock">--:--</div>
-      <div class="date-row" id="dateRow">carregando data…</div>
+<main class="panel">
 
-      <div class="divider"></div>
+  <header class="bar">
+    <span class="brand"><i class="dot"></i><span id="brandTxt">Painel de bordo</span></span>
+    <span class="date" id="dateRow">—</span>
+    <span class="batt" id="batt">—</span>
+  </header>
 
-      <div class="weather" id="weatherBox">
-        <svg class="weather-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="4"></circle>
-          <line x1="12" y1="2" x2="12" y2="4"></line>
-          <line x1="12" y1="20" x2="12" y2="22"></line>
-          <line x1="4.2" y1="4.2" x2="5.6" y2="5.6"></line>
-          <line x1="18.4" y1="18.4" x2="19.8" y2="19.8"></line>
-          <line x1="2" y1="12" x2="4" y2="12"></line>
-          <line x1="20" y1="12" x2="22" y2="12"></line>
-          <line x1="4.2" y1="19.8" x2="5.6" y2="18.4"></line>
-          <line x1="18.4" y1="5.6" x2="19.8" y2="4.2"></line>
-        </svg>
-        <div class="weather-sub">
-          <div class="weather-temp" id="weatherTemp">--°</div>
-          <div class="weather-desc" id="weatherDesc">sem dados ainda</div>
+  <section class="grid">
+
+    <div class="module primary">
+      <div class="m-label" id="mainLabel">Hora</div>
+      <div class="p-value" id="mainValue">--:--</div>
+      <div class="p-sub" id="mainSub">aguardando GPS</div>
+    </div>
+
+    <div class="col mid">
+      <div class="module weather">
+        <div class="m-label">Tempo agora</div>
+        <div class="w-top">
+          <span class="w-temp" id="wTemp">--°</span>
+          <span class="w-feels" id="wFeels">sensação --°</span>
         </div>
+        <div class="w-desc" id="wDesc">sem dados</div>
+        <div class="w-wind" id="wWind">vento --</div>
+      </div>
+
+      <div class="module rain">
+        <div class="m-label">Chuva · 6h</div>
+        <div class="bars" id="bars"></div>
+        <div class="hours" id="hours"></div>
       </div>
     </div>
 
-    <div class="right">
-      <a class="cta" href="https://www.google.com/maps" id="mapsBtn">
-        <span class="cta-corner">GO</span>
-        <svg class="cta-icon" viewBox="0 0 24 24" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 10c0 6-9 12-9 12S3 16 3 10a9 9 0 1 1 18 0z"></path>
-          <circle cx="12" cy="10" r="3"></circle>
-        </svg>
-        <div class="cta-label">Abrir Maps</div>
-        <div class="cta-sub">Toque para navegar</div>
-      </a>
-    </div>
-  </div>
+    <a class="module cta" id="mapsBtn" href="https://www.google.com/maps">
+      <svg class="cta-icon" viewBox="0 0 24 24">
+        <path d="M21 10c0 6-9 12-9 12S3 16 3 10a9 9 0 1 1 18 0z"></path>
+        <circle cx="12" cy="10" r="3"></circle>
+      </svg>
+      <span class="cta-label">Abrir Maps</span>
+      <span class="cta-sub">Toque para navegar</span>
+    </a>
 
-  <div class="route">
-    <svg viewBox="0 0 1200 40" preserveAspectRatio="none">
-      <path class="route-line" d="M0,20 C120,-10 260,50 400,20 C540,-10 680,50 820,20 C960,-10 1100,50 1200,20"></path>
-    </svg>
-  </div>
-  <div class="footer-note">Trip computer · offline ready</div>
+  </section>
+
+  <footer class="strip">
+    <div class="stat trip" id="tripBox">
+      <span class="k">Trecho</span>
+      <span class="v" id="tripVal">0,0<small>km</small></span>
+    </div>
+    <div class="stat">
+      <span class="k">Altitude</span>
+      <span class="v" id="altVal">—<small>m</small></span>
+    </div>
+    <div class="daylight">
+      <div class="dl-top"><span id="dlLabel">Luz do dia</span><span id="dlRight">—</span></div>
+      <div class="dl-track"><div class="dl-fill" id="dlFill"></div></div>
+    </div>
+  </footer>
+
+</main>
 
 <script>
-  // ---------- clock ----------
-  function pad(n){ return n.toString().padStart(2,'0'); }
+"use strict";
 
-  function updateClock(){
-    const now = new Date();
-    document.getElementById('clock').innerHTML =
-      pad(now.getHours()) + ':' + pad(now.getMinutes()) +
-      '<span class="sec">' + pad(now.getSeconds()) + '</span>';
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2,'0');
 
-    const dias = ['domingo','segunda-feira','terça-feira','quarta-feira','quinta-feira','sexta-feira','sábado'];
-    const meses = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
-    document.getElementById('dateRow').textContent =
-      dias[now.getDay()] + ', ' + now.getDate() + ' ' + meses[now.getMonth()];
+/* ---------- estado ---------- */
+let sunrise = null, sunset = null;      // objetos Date do dia atual
+let lastFix = null;                     // última posição do GPS
+let trip = parseFloat(localStorage.getItem('tripKm') || '0');
+let speedKmh = 0;
+let lastMoveAt = 0;
+
+/* ---------- estrelas (uma vez) ---------- */
+(function stars(){
+  const box = $('stars');
+  let html = '';
+  for(let i=0;i<46;i++){
+    const s = (Math.random()*1.6+0.8).toFixed(1);
+    html += '<i class="star" style="left:'+(Math.random()*100).toFixed(1)+'%;top:'+
+            (Math.random()*62).toFixed(1)+'%;width:'+s+'px;height:'+s+'px;animation-delay:'+
+            (Math.random()*4).toFixed(1)+'s"></i>';
   }
-  updateClock();
-  setInterval(updateClock, 1000);
+  box.innerHTML = html;
+})();
 
-  // ---------- weather (Open-Meteo, sem API key) ----------
-  const wmoDesc = {
-    0:'céu limpo',1:'poucas nuvens',2:'parcialmente nublado',3:'nublado',
-    45:'neblina',48:'neblina gelada',
-    51:'garoa leve',53:'garoa',55:'garoa forte',
-    61:'chuva leve',63:'chuva',65:'chuva forte',
-    71:'neve leve',73:'neve',75:'neve forte',
-    80:'chuva de verão',81:'chuva forte',82:'chuva intensa',
-    95:'tempestade',96:'tempestade c/ granizo',99:'tempestade forte'
-  };
+/* ---------- céu: tema + posição do sol ---------- */
+function minutes(d){ return d.getHours()*60 + d.getMinutes(); }
 
-  function setWeather(temp, code){
-    document.getElementById('weatherTemp').textContent = Math.round(temp) + '°';
-    document.getElementById('weatherDesc').textContent = wmoDesc[code] || 'sem descrição';
-  }
+function updateSky(){
+  const now = new Date();
+  const m = minutes(now);
+  const rise = sunrise ? minutes(sunrise) : 6*60;
+  const set  = sunset  ? minutes(sunset)  : 18*60+30;
 
-  function fetchWeather(lat, lon){
-    const url = 'https://api.open-meteo.com/v1/forecast?latitude=' + lat + '&longitude=' + lon + '&current_weather=true';
-    fetch(url).then(r => r.json()).then(data => {
-      if(data && data.current_weather){
-        setWeather(data.current_weather.temperature, data.current_weather.weathercode);
-        localStorage.setItem('lastWeather', JSON.stringify(data.current_weather));
-      }
-    }).catch(() => {
-      loadCachedWeather();
-    });
-  }
-
-  function loadCachedWeather(){
-    try{
-      const cached = JSON.parse(localStorage.getItem('lastWeather'));
-      if(cached){ setWeather(cached.temperature, cached.weathercode); }
-      else { document.getElementById('weatherDesc').textContent = 'sem sinal'; }
-    }catch(e){
-      document.getElementById('weatherDesc').textContent = 'sem sinal';
-    }
+  let tema;
+  if(m < rise - 40 || m > set + 40)            tema = 't-noite';
+  else if(m < rise + 60 || m > set - 70)       tema = 't-tarde';
+  else                                          tema = 't-dia';
+  if(!document.body.classList.contains(tema)){
+    document.body.className = tema;
+    const cor = tema === 't-dia' ? '#8FA9B8' : tema === 't-tarde' ? '#2E3340' : '#0E1113';
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if(meta) meta.setAttribute('content', cor);
   }
 
-  if('geolocation' in navigator){
-    navigator.geolocation.getCurrentPosition(
-      pos => fetchWeather(pos.coords.latitude, pos.coords.longitude),
-      () => loadCachedWeather(),
-      { timeout: 8000 }
-    );
+  // sol/lua percorre o arco entre nascer e pôr do sol
+  let p = (m - rise) / Math.max(set - rise, 1);
+  let arco = true;
+  if(p < 0 || p > 1){ // noite: a lua faz o caminho inverso
+    const noite = (m > set) ? (m - set) : (m + 1440 - set);
+    const dur = (rise + 1440 - set);
+    p = noite / dur;
+    arco = false;
+  }
+  p = Math.min(Math.max(p,0),1);
+  const x = 6 + p*88;
+  const y = arco ? (52 - Math.sin(p*Math.PI)*40) : (30 - Math.sin(p*Math.PI)*14);
+  const sun = $('sun');
+  sun.style.left = x.toFixed(1)+'%';
+  sun.style.top  = y.toFixed(1)+'%';
+
+  // barra de luz restante
+  if(m >= rise && m <= set){
+    const rest = set - m;
+    $('dlLabel').textContent = 'Luz do dia';
+    $('dlRight').textContent = Math.floor(rest/60)+'h'+pad(rest%60)+' até o pôr do sol';
+    $('dlFill').style.width = ((m-rise)/(set-rise)*100).toFixed(1)+'%';
   } else {
-    loadCachedWeather();
+    const falta = m < rise ? (rise - m) : (rise + 1440 - m);
+    $('dlLabel').textContent = 'Noite';
+    $('dlRight').textContent = 'nasce o sol em '+Math.floor(falta/60)+'h'+pad(falta%60);
+    $('dlFill').style.width = '100%';
+  }
+}
+
+/* ---------- display principal: hora quando parado, velocidade quando rodando ---------- */
+function updateMain(){
+  const now = new Date();
+  const rodando = (Date.now() - lastMoveAt) < 9000 && speedKmh >= 3;
+
+  if(rodando){
+    $('mainLabel').textContent = 'Velocidade';
+    $('mainValue').innerHTML = Math.round(speedKmh) + '<span class="unit">km/h</span>';
+    $('mainSub').innerHTML = pad(now.getHours())+':'+pad(now.getMinutes())+
+      ' · trecho <b>'+trip.toFixed(1).replace('.',',')+' km</b>';
+  } else {
+    $('mainLabel').textContent = 'Hora';
+    $('mainValue').innerHTML = pad(now.getHours())+':'+pad(now.getMinutes())+
+      '<span class="sec">'+pad(now.getSeconds())+'</span>';
+    $('mainSub').textContent = speedKmh > 0 || lastFix ? 'parado · GPS ativo' : 'aguardando GPS';
   }
 
-  // atualiza clima a cada 15 min se o app ficar aberto e tiver sinal
-  setInterval(() => {
-    if('geolocation' in navigator){
-      navigator.geolocation.getCurrentPosition(
-        pos => fetchWeather(pos.coords.latitude, pos.coords.longitude),
-        () => {}, { timeout: 8000 }
-      );
+  const dias = ['dom','seg','ter','qua','qui','sex','sáb'];
+  const meses = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  $('dateRow').textContent = dias[now.getDay()]+' '+now.getDate()+' '+meses[now.getMonth()];
+}
+
+/* ---------- GPS: velocidade, altitude, odômetro ---------- */
+function haversine(a, b){
+  const R = 6371, rad = Math.PI/180;
+  const dLat = (b.lat-a.lat)*rad, dLon = (b.lon-a.lon)*rad;
+  const s = Math.sin(dLat/2)**2 +
+            Math.cos(a.lat*rad)*Math.cos(b.lat*rad)*Math.sin(dLon/2)**2;
+  return 2*R*Math.asin(Math.sqrt(s));
+}
+
+function onFix(pos){
+  const c = pos.coords;
+  const agora = { lat:c.latitude, lon:c.longitude, t:pos.timestamp };
+
+  // velocidade: usa a do GPS; se vier vazia, calcula pela distância
+  let v = (c.speed !== null && !isNaN(c.speed)) ? c.speed*3.6 : null;
+
+  if(lastFix){
+    const d = haversine(lastFix, agora);           // km
+    const dt = (agora.t - lastFix.t)/1000;         // s
+    if(v === null && dt > 0) v = (d/dt)*3600;
+    // só soma no odômetro se o deslocamento for plausível (ignora ruído parado)
+    if(d > 0.004 && d < 1 && dt > 0 && (d/dt)*3600 < 220){
+      trip += d;
+      localStorage.setItem('tripKm', trip.toFixed(3));
+      $('tripVal').innerHTML = trip.toFixed(1).replace('.',',')+'<small>km</small>';
     }
-  }, 15 * 60 * 1000);
-
-  // ---------- botão Maps: tenta abrir o app nativo no Android ----------
-  document.getElementById('mapsBtn').addEventListener('click', function(e){
-    e.preventDefault();
-    const intentUrl = 'intent://maps.google.com/maps#Intent;scheme=https;package=com.google.android.apps.maps;end';
-    window.location.href = intentUrl;
-    setTimeout(() => { window.location.href = 'https://www.google.com/maps'; }, 700);
-  });
-
-  // mantém a tela acordada enquanto possível
-  let wakeLock = null;
-  async function requestWakeLock(){
-    try{
-      if('wakeLock' in navigator){ wakeLock = await navigator.wakeLock.request('screen'); }
-    }catch(e){}
   }
-  requestWakeLock();
-  document.addEventListener('visibilitychange', () => {
-    if(document.visibilityState === 'visible'){ requestWakeLock(); }
-  });
 
-  // ---------- trava a tela em paisagem quando aberto como app ----------
-  async function lockLandscape(){
-    try{
-      if(screen.orientation && screen.orientation.lock){
-        await screen.orientation.lock('landscape');
-      }
-    }catch(e){}
+  if(v !== null){
+    speedKmh = Math.max(0, v);
+    if(speedKmh >= 3) lastMoveAt = Date.now();
   }
-  lockLandscape();
+  if(c.altitude !== null && !isNaN(c.altitude)){
+    $('altVal').innerHTML = Math.round(c.altitude)+'<small>m</small>';
+  }
+  lastFix = agora;
 
-  // ---------- service worker: funciona sem internet ----------
-  if('serviceWorker' in navigator){
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('sw.js').catch(() => {});
+  if(!fetchWeather.feito){ fetchWeather(agora.lat, agora.lon); fetchWeather.feito = true; }
+}
+
+if('geolocation' in navigator){
+  navigator.geolocation.watchPosition(onFix, () => {}, {
+    enableHighAccuracy:true, maximumAge:2000, timeout:15000
+  });
+}
+
+/* ---------- odômetro: segurar para zerar ---------- */
+(function resetTrip(){
+  const box = $('tripBox');
+  let timer = null;
+  const start = () => {
+    box.classList.add('holding');
+    timer = setTimeout(() => {
+      trip = 0;
+      localStorage.setItem('tripKm','0');
+      $('tripVal').innerHTML = '0,0<small>km</small>';
+      box.classList.remove('holding');
+      if(navigator.vibrate) navigator.vibrate(40);
+    }, 1200);
+  };
+  const stop = () => { clearTimeout(timer); box.classList.remove('holding'); };
+  box.addEventListener('touchstart', start, {passive:true});
+  box.addEventListener('touchend', stop);
+  box.addEventListener('touchcancel', stop);
+  box.addEventListener('mousedown', start);
+  box.addEventListener('mouseup', stop);
+  box.addEventListener('mouseleave', stop);
+})();
+
+/* ---------- clima ---------- */
+const wmo = {
+  0:'céu limpo',1:'poucas nuvens',2:'parcialmente nublado',3:'nublado',
+  45:'neblina',48:'neblina gelada',51:'garoa leve',53:'garoa',55:'garoa forte',
+  56:'garoa gelada',57:'garoa gelada',61:'chuva leve',63:'chuva',65:'chuva forte',
+  66:'chuva gelada',67:'chuva gelada',71:'neve leve',73:'neve',75:'neve forte',
+  77:'granizo fino',80:'pancada de chuva',81:'pancada forte',82:'chuva intensa',
+  85:'pancada de neve',86:'nevasca',95:'tempestade',96:'tempestade c/ granizo',99:'tempestade forte'
+};
+
+function pintaClima(d){
+  if(d.temp !== undefined) $('wTemp').textContent = Math.round(d.temp)+'°';
+  if(d.feels !== undefined) $('wFeels').textContent = 'sensação '+Math.round(d.feels)+'°';
+  if(d.code !== undefined) $('wDesc').textContent = wmo[d.code] || '—';
+  if(d.wind !== undefined) $('wWind').textContent = 'vento '+Math.round(d.wind)+' km/h';
+
+  if(d.chuva && d.chuva.length){
+    const bars = $('bars'), hours = $('hours');
+    if(!bars.children.length){
+      bars.innerHTML = d.chuva.map(() => '<div class="bar-wrap"><div class="bar-fill"></div></div>').join('');
+      hours.innerHTML = d.chuva.map(h => '<span>'+h.hora+'</span>').join('');
+    }
+    [...bars.querySelectorAll('.bar-fill')].forEach((el,i) => {
+      const p = d.chuva[i] ? d.chuva[i].prob : 0;
+      el.style.height = Math.max(4, p) + '%';
+      el.classList.toggle('wet', p >= 40);
     });
   }
-</script>
 
+  if(d.sunrise) sunrise = new Date(d.sunrise);
+  if(d.sunset)  sunset  = new Date(d.sunset);
+  updateSky();
+}
+
+function fetchWeather(lat, lon){
+  const url = 'https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+
+    '&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m'+
+    '&hourly=precipitation_probability&daily=sunrise,sunset'+
+    '&forecast_days=2&timezone=auto';
+
+  fetch(url).then(r => r.json()).then(j => {
+    const agora = new Date();
+    let chuva = [];
+    if(j.hourly && j.hourly.time){
+      const i0 = j.hourly.time.findIndex(t => new Date(t) > agora);
+      for(let i = Math.max(i0,0); i < Math.max(i0,0)+6 && i < j.hourly.time.length; i++){
+        chuva.push({
+          hora: pad(new Date(j.hourly.time[i]).getHours())+'h',
+          prob: j.hourly.precipitation_probability[i] ?? 0
+        });
+      }
+    }
+    const dados = {
+      temp:  j.current && j.current.temperature_2m,
+      feels: j.current && j.current.apparent_temperature,
+      code:  j.current && j.current.weather_code,
+      wind:  j.current && j.current.wind_speed_10m,
+      chuva: chuva,
+      sunrise: j.daily && j.daily.sunrise && j.daily.sunrise[0],
+      sunset:  j.daily && j.daily.sunset  && j.daily.sunset[0],
+      salvoEm: Date.now()
+    };
+    localStorage.setItem('clima', JSON.stringify(dados));
+    pintaClima(dados);
+  }).catch(carregaClimaSalvo);
+}
+
+function carregaClimaSalvo(){
+  try{
+    const d = JSON.parse(localStorage.getItem('clima'));
+    if(d){
+      pintaClima(d);
+      const h = Math.round((Date.now() - (d.salvoEm||0))/3600000);
+      $('wWind').textContent = 'vento '+Math.round(d.wind||0)+' km/h · sem sinal'+(h?' ('+h+'h)':'');
+    } else {
+      $('wDesc').textContent = 'sem sinal';
+    }
+  }catch(e){ $('wDesc').textContent = 'sem sinal'; }
+}
+carregaClimaSalvo();
+
+// tenta atualizar mesmo antes do primeiro fix do GPS, usando a última posição salva
+setInterval(() => {
+  if(lastFix) fetchWeather(lastFix.lat, lastFix.lon);
+}, 15*60*1000);
+
+/* ---------- bateria ---------- */
+if(navigator.getBattery){
+  navigator.getBattery().then(b => {
+    const pinta = () => {
+      $('batt').textContent = Math.round(b.level*100)+'%'+(b.charging?' ⚡':'');
+    };
+    pinta();
+    b.addEventListener('levelchange', pinta);
+    b.addEventListener('chargingchange', pinta);
+  }).catch(()=>{});
+} else { $('batt').textContent = ''; }
+
+/* ---------- botão Maps ---------- */
+$('mapsBtn').addEventListener('click', function(e){
+  e.preventDefault();
+  window.location.href = 'intent://maps.google.com/maps#Intent;scheme=https;package=com.google.android.apps.maps;end';
+  setTimeout(() => { window.location.href = 'https://www.google.com/maps'; }, 700);
+});
+
+/* ---------- tela sempre acesa + paisagem ---------- */
+let wakeLock = null;
+async function keepAwake(){
+  try{ if('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); }catch(e){}
+}
+keepAwake();
+document.addEventListener('visibilitychange', () => {
+  if(document.visibilityState === 'visible'){ keepAwake(); updateSky(); }
+});
+(async () => {
+  try{ if(screen.orientation && screen.orientation.lock) await screen.orientation.lock('landscape'); }catch(e){}
+})();
+
+/* ---------- relógios internos ---------- */
+$('tripVal').innerHTML = trip.toFixed(1).replace('.',',')+'<small>km</small>';
+updateMain();
+updateSky();
+setInterval(updateMain, 1000);
+setInterval(updateSky, 60000);
+
+/* ---------- service worker ---------- */
+if('serviceWorker' in navigator){
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+</script>
 </body>
 </html>
