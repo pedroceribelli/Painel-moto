@@ -35,7 +35,7 @@ body.t-dia{
   --accent:#A8461F; --accent-soft:rgba(168,70,31,0.16);
   --sun:#FFF3D6; --sun-glow:rgba(255,236,190,0.75);
   --mod-bg:rgba(255,255,255,0.32); --line:rgba(22,25,26,0.20);
-  --strip-bg:rgba(240,238,228,0.72);
+  --strip-bg:rgba(240,238,228,0.72); --card:#EFEADC;
   --star:0;
 }
 body.t-tarde{
@@ -45,7 +45,7 @@ body.t-tarde{
   --accent:#FF8A45; --accent-soft:rgba(255,138,69,0.16);
   --sun:#FFD9A0; --sun-glow:rgba(255,168,90,0.55);
   --mod-bg:rgba(20,16,14,0.34); --line:rgba(246,236,216,0.18);
-  --strip-bg:rgba(22,16,13,0.62);
+  --strip-bg:rgba(22,16,13,0.62); --card:#1C1512;
   --star:0.35;
 }
 body.t-noite{
@@ -55,7 +55,7 @@ body.t-noite{
   --accent:#E2A24A; --accent-soft:rgba(226,162,74,0.14);
   --sun:#DCE3EA; --sun-glow:rgba(190,205,220,0.30);
   --mod-bg:rgba(255,255,255,0.05); --line:rgba(240,223,192,0.15);
-  --strip-bg:rgba(6,9,11,0.62);
+  --strip-bg:rgba(6,9,11,0.62); --card:#0B0F12;
   --star:1;
 }
 
@@ -203,6 +203,39 @@ body{
   *{animation:none!important;transition:none!important;}
   .module,.strip>*{opacity:1;transform:none;}
 }
+
+/* ============ HISTÓRICO ============ */
+.sheet{position:fixed;inset:0;z-index:9;background:rgba(0,0,0,.6);
+  display:flex;align-items:center;justify-content:center;padding:1rem;}
+.sheet[hidden]{display:none;}
+.sheet-card{width:min(100%,44rem);max-height:100%;display:flex;flex-direction:column;
+  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  padding:1rem 1.2rem;gap:.7rem;}
+.sheet-head{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;}
+.sheet-head h2{font-family:var(--display);font-size:1.5rem;font-weight:700;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--ink);}
+.sheet-total{font-family:var(--display);font-size:1.15rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ink);opacity:.7;}
+.sheet-total b{font-size:1.5rem;font-weight:700;opacity:1;}
+.sheet-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+.row{display:flex;align-items:baseline;gap:.8rem;padding:.45rem 0;
+  border-bottom:1px solid var(--line);}
+.row:last-child{border-bottom:0;}
+.row .d{flex:1;font-size:1.2rem;color:var(--ink);opacity:.8;text-transform:capitalize;}
+.row .km{font-family:var(--display);font-weight:700;font-size:1.5rem;
+  font-variant-numeric:tabular-nums;color:var(--ink);}
+.row .vx{width:6.5rem;text-align:right;font-size:1.1rem;color:var(--ink);opacity:.55;
+  font-variant-numeric:tabular-nums;}
+.row.hoje .km{color:var(--accent);}
+.vazio{padding:1.2rem 0;font-size:1.2rem;color:var(--ink);opacity:.55;}
+.sheet-actions{display:flex;gap:.6rem;}
+.sheet-actions button{flex:1;padding:.6rem;background:transparent;cursor:pointer;
+  border:1px solid var(--line);border-radius:.5rem;color:var(--ink);
+  font-family:var(--display);font-size:1.15rem;font-weight:600;
+  letter-spacing:.12em;text-transform:uppercase;}
+.sheet-actions button.perigo{border-color:var(--accent);color:var(--accent);}
+.sheet-actions button:active{background:var(--accent-soft);}
 </style>
 </head>
 <body class="t-dia">
@@ -281,6 +314,21 @@ body{
 
 </main>
 
+<div class="sheet" id="sheet" hidden>
+  <div class="sheet-card">
+    <div class="sheet-head">
+      <h2>Deslocamento</h2>
+      <div class="sheet-total">Total <b id="shTotal">0</b> km</div>
+    </div>
+    <div class="sheet-list" id="shList"></div>
+    <div class="sheet-actions">
+      <button id="shCopy">Copiar</button>
+      <button id="shReset" class="perigo">Zerar trecho</button>
+      <button id="shClose">Fechar</button>
+    </div>
+  </div>
+</div>
+
 <script>
 "use strict";
 
@@ -291,6 +339,51 @@ const pad = n => String(n).padStart(2,'0');
 let sunrise = null, sunset = null;      // objetos Date do dia atual
 let lastFix = null;                     // última posição do GPS
 let trip = parseFloat(localStorage.getItem('tripKm') || '0');
+let total = parseFloat(localStorage.getItem('odoTotal') || '0');
+let diario = {};
+try{ diario = JSON.parse(localStorage.getItem('diario') || '{}'); }catch(e){ diario = {}; }
+
+// pede ao Android para não descartar os dados salvos
+if(navigator.storage && navigator.storage.persist){ navigator.storage.persist().catch(()=>{}); }
+
+function chaveHoje(d){
+  d = d || new Date();
+  return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+}
+
+let salvarPendente = false;
+function salvaTudo(agora){
+  if(!agora){
+    if(salvarPendente) return;
+    salvarPendente = true;
+    setTimeout(() => { salvarPendente = false; salvaTudo(true); }, 5000);
+    return;
+  }
+  try{
+    // mantém os 90 dias mais recentes
+    const chaves = Object.keys(diario).sort();
+    while(chaves.length > 90){ delete diario[chaves.shift()]; }
+    localStorage.setItem('tripKm', trip.toFixed(3));
+    localStorage.setItem('odoTotal', total.toFixed(3));
+    localStorage.setItem('diario', JSON.stringify(diario));
+  }catch(e){}
+}
+
+function registraTrecho(km, vel){
+  const k = chaveHoje();
+  const dia = diario[k] || {km:0, vmax:0};
+  dia.km += km;
+  if(vel && vel > dia.vmax) dia.vmax = vel;
+  diario[k] = dia;
+  total += km;
+  salvaTudo();
+}
+
+// salva na hora se o app for fechado ou for para segundo plano
+window.addEventListener('pagehide', () => salvaTudo(true));
+document.addEventListener('visibilitychange', () => {
+  if(document.visibilityState === 'hidden') salvaTudo(true);
+});
 let speedKmh = 0;
 let lastMoveAt = 0;
 
@@ -400,7 +493,7 @@ function onFix(pos){
     // só soma no odômetro se o deslocamento for plausível (ignora ruído parado)
     if(d > 0.004 && d < 1 && dt > 0 && (d/dt)*3600 < 220){
       trip += d;
-      localStorage.setItem('tripKm', trip.toFixed(3));
+      registraTrecho(d, (c.speed !== null && !isNaN(c.speed)) ? c.speed*3.6 : (d/dt)*3600);
       $('tripVal').innerHTML = trip.toFixed(1).replace('.',',')+'<small>km</small>';
     }
   }
@@ -424,20 +517,30 @@ if('geolocation' in navigator){
 }
 
 /* ---------- odômetro: segurar para zerar ---------- */
+function zeraTrecho(){
+  trip = 0;
+  salvaTudo(true);
+  $('tripVal').innerHTML = '0,0<small>km</small>';
+  if(navigator.vibrate) navigator.vibrate(40);
+}
+
 (function resetTrip(){
   const box = $('tripBox');
-  let timer = null;
+  let timer = null, segurou = false;
   const start = () => {
+    segurou = false;
     box.classList.add('holding');
     timer = setTimeout(() => {
-      trip = 0;
-      localStorage.setItem('tripKm','0');
-      $('tripVal').innerHTML = '0,0<small>km</small>';
+      segurou = true;
+      zeraTrecho();
       box.classList.remove('holding');
-      if(navigator.vibrate) navigator.vibrate(40);
     }, 1200);
   };
-  const stop = () => { clearTimeout(timer); box.classList.remove('holding'); };
+  const stop = () => {
+    clearTimeout(timer);
+    box.classList.remove('holding');
+    if(!segurou) abreHistorico();   // toque curto abre o histórico
+  };
   box.addEventListener('touchstart', start, {passive:true});
   box.addEventListener('touchend', stop);
   box.addEventListener('touchcancel', stop);
@@ -445,6 +548,57 @@ if('geolocation' in navigator){
   box.addEventListener('mouseup', stop);
   box.addEventListener('mouseleave', stop);
 })();
+
+/* ---------- histórico de deslocamento ---------- */
+function rotuloData(chave){
+  const [a,m,d] = chave.split('-').map(Number);
+  const dt = new Date(a, m-1, d);
+  const dias = ['dom','seg','ter','qua','qui','sex','sáb'];
+  const meses = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  return dias[dt.getDay()]+' '+d+' '+meses[m-1];
+}
+
+function textoHistorico(){
+  const chaves = Object.keys(diario).sort().reverse();
+  let txt = 'Deslocamento — total '+total.toFixed(1).replace('.',',')+' km\n';
+  chaves.forEach(k => {
+    txt += rotuloData(k)+' · '+diario[k].km.toFixed(1).replace('.',',')+' km';
+    if(diario[k].vmax) txt += ' · máx '+Math.round(diario[k].vmax)+' km/h';
+    txt += '\n';
+  });
+  return txt;
+}
+
+function abreHistorico(){
+  const chaves = Object.keys(diario).sort().reverse();
+  const hoje = chaveHoje();
+  $('shTotal').textContent = total.toFixed(1).replace('.',',');
+  $('shList').innerHTML = chaves.length
+    ? chaves.map(k =>
+        '<div class="row'+(k===hoje?' hoje':'')+'">'+
+          '<span class="d">'+rotuloData(k)+(k===hoje?' · hoje':'')+'</span>'+
+          '<span class="km">'+diario[k].km.toFixed(1).replace('.',',')+' km</span>'+
+          '<span class="vx">'+(diario[k].vmax?'máx '+Math.round(diario[k].vmax):'—')+'</span>'+
+        '</div>').join('')
+    : '<div class="vazio">Nenhum deslocamento registrado ainda. Assim que o GPS pegar e a moto andar, os dias aparecem aqui.</div>';
+  $('sheet').hidden = false;
+}
+
+$('shClose').addEventListener('click', () => { $('sheet').hidden = true; });
+$('sheet').addEventListener('click', e => { if(e.target.id === 'sheet') $('sheet').hidden = true; });
+$('shReset').addEventListener('click', () => { zeraTrecho(); $('sheet').hidden = true; });
+$('shCopy').addEventListener('click', () => {
+  const txt = textoHistorico();
+  const ok = () => { $('shCopy').textContent = 'Copiado'; setTimeout(()=>{ $('shCopy').textContent='Copiar'; },1600); };
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(ok).catch(()=>{});
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = txt; document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); ok(); }catch(e){}
+    document.body.removeChild(ta);
+  }
+});
 
 /* ---------- clima ---------- */
 const wmo = {
