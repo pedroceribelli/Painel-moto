@@ -6,7 +6,7 @@
 <title>Painel de Viagem</title>
 
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0E1113">
+<meta name="theme-color" content="#0A0A0B">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -19,402 +19,312 @@
 <link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
-/* ============ TEMAS ============ */
 :root{
-  /* escala fluida: tudo em rem, ancorado na altura da tela */
-  font-size: clamp(9px, 3.4vh, 18px);
+  font-size: clamp(10px, 2.3vh, 20px);
   --display:'Saira Condensed','Arial Narrow',sans-serif;
   --body:'Barlow','Helvetica Neue',sans-serif;
-  --radius:0.9rem;
-}
+  --radius:1rem;
 
-body.t-dia{
-  --sky-1:#8FA9B8; --sky-2:#C9C3AE; --sky-3:#E4DCC6;
-  --ridge-far:#7D8478; --ridge-near:#4A5347;
-  --ink:#16191A; --muted:#4E5750;
-  --accent:#A8461F; --accent-soft:rgba(168,70,31,0.16);
-  --sun:#FFF3D6; --sun-glow:rgba(255,236,190,0.75);
-  --mod-bg:rgba(255,255,255,0.32); --line:rgba(22,25,26,0.20);
-  --strip-bg:rgba(240,238,228,0.72); --card:#EFEADC;
-  --star:0;
-}
-body.t-tarde{
-  --sky-1:#2E3340; --sky-2:#8A4A2E; --sky-3:#D2793C;
-  --ridge-far:#453B36; --ridge-near:#241E1C;
-  --ink:#F6ECD8; --muted:#C3A98E;
-  --accent:#FF8A45; --accent-soft:rgba(255,138,69,0.16);
-  --sun:#FFD9A0; --sun-glow:rgba(255,168,90,0.55);
-  --mod-bg:rgba(20,16,14,0.34); --line:rgba(246,236,216,0.18);
-  --strip-bg:rgba(22,16,13,0.62); --card:#1C1512;
-  --star:0.35;
-}
-body.t-noite{
-  --sky-1:#070A0E; --sky-2:#0D141B; --sky-3:#141A18;
-  --ridge-far:#131A1B; --ridge-near:#080B0C;
-  --ink:#F0DFC0; --muted:#9A9480;
-  --accent:#E2A24A; --accent-soft:rgba(226,162,74,0.14);
-  --sun:#DCE3EA; --sun-glow:rgba(190,205,220,0.30);
-  --mod-bg:rgba(255,255,255,0.05); --line:rgba(240,223,192,0.15);
-  --strip-bg:rgba(6,9,11,0.62); --card:#0B0F12;
-  --star:1;
+  --bg:#0A0A0B;
+  --surface:#141416;
+  --surface-2:#1C1C1F;
+  --line:rgba(255,255,255,0.09);
+  --line-2:rgba(255,255,255,0.15);
+  --ink:#F5F3EF;
+  --muted:#8A8A90;
+  --amber:#FFB020;
+  --amber-soft:rgba(255,176,32,0.14);
+  --amber-dim:rgba(255,176,32,0.55);
+  --alert:#FF5A3C;
+  --alert-soft:rgba(255,90,60,0.16);
+  --ok:#7BB661;
 }
 
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{width:100%;height:100%;overflow:hidden;}
 body{
-  background:var(--sky-1);
+  background:var(--bg);
   font-family:var(--body);
   color:var(--ink);
-  transition:color .8s ease, background .8s ease;
   user-select:none;
+  -webkit-user-select:none;
 }
 
-/* ============ CÉU ============ */
-.sky{position:fixed;inset:0;z-index:0;
-  background:linear-gradient(180deg,var(--sky-1) 0%,var(--sky-2) 58%,var(--sky-3) 100%);
-  transition:background .8s ease;}
-.sun{position:absolute;width:14vh;height:14vh;border-radius:50%;
-  background:radial-gradient(circle,var(--sun) 0%,var(--sun) 34%,var(--sun-glow) 40%,transparent 72%);
-  transform:translate(-50%,-50%);transition:left 1s linear,top 1s linear;}
-.stars{position:absolute;inset:0;opacity:var(--star);transition:opacity 1s ease;}
-.star{position:absolute;background:#F0DFC0;border-radius:50%;animation:tw 4s ease-in-out infinite;}
-@keyframes tw{0%,100%{opacity:.25}50%{opacity:.9}}
+.panel{
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  padding:.7rem .8rem .6rem;
+  gap:0.5rem;
+}
 
-.ridge{position:absolute;left:0;right:0;}
-.ridge-far{bottom:24%;height:26%;background:var(--ridge-far);opacity:.75;
-  clip-path:polygon(0 100%,0 62%,8% 44%,17% 66%,26% 34%,36% 58%,45% 26%,55% 54%,64% 30%,74% 58%,84% 38%,92% 60%,100% 44%,100% 100%);}
-.ridge-near{bottom:0;height:30%;background:var(--ridge-near);
-  clip-path:polygon(0 100%,0 52%,10% 66%,20% 46%,31% 70%,42% 50%,52% 72%,63% 48%,73% 68%,84% 52%,93% 70%,100% 56%,100% 100%);}
+/* ---- topo ---- */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  font-family:var(--display);font-weight:600;font-size:1.1rem;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--muted);
+  flex-shrink:0;
+}
+.topbar .batt{display:flex;align-items:center;gap:.35rem;font-variant-numeric:tabular-nums;}
+.topbar .batt.low{color:var(--alert);}
 
-.grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.20;mix-blend-mode:overlay;
-  background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.06) 0 1px,transparent 1px 3px);}
+/* ---- módulo base ---- */
+.mod{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  position:relative;
+}
+.mlabel{
+  font-family:var(--display);font-weight:600;font-size:1.05rem;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--muted);
+  white-space:nowrap;
+}
 
-/* ============ ESTRUTURA ============ */
-.panel{position:relative;z-index:2;height:100%;display:flex;flex-direction:column;
-  padding:1.1rem 1.5rem;gap:.9rem;}
+/* ---- velocidade (herói) ---- */
+.speed{
+  flex:1;min-height:0;
+  display:flex;flex-direction:column;justify-content:center;gap:.15rem;
+  padding:.7rem 1.3rem;overflow:hidden;
+  background:linear-gradient(160deg,var(--surface) 0%,var(--surface-2) 100%);
+}
+.speed-num{
+  font-family:var(--display);font-weight:700;
+  font-size:min(24vw,6rem);line-height:.88;
+  font-variant-numeric:tabular-nums;letter-spacing:-.02em;
+  color:var(--muted);opacity:.5;
+  transition:color .4s ease,opacity .4s ease;
+  display:flex;align-items:baseline;gap:.5rem;
+}
+.speed-num.on{color:var(--amber);opacity:1;text-shadow:0 0 3rem rgba(255,176,32,.25);}
+.speed-num .u{font-size:.2em;font-weight:600;color:var(--muted);letter-spacing:.06em;}
+.speed-foot{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:.3rem;
+}
+.speed-state{
+  font-family:var(--display);font-size:1rem;font-weight:600;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);
+  padding:.2rem .7rem;border:1px solid var(--line-2);border-radius:99px;
+}
+.speed-state.on{color:var(--amber);border-color:var(--amber-dim);}
+.speed-max{font-family:var(--display);font-size:1.15rem;color:var(--muted);
+  letter-spacing:.06em;font-variant-numeric:tabular-nums;}
+.speed-max b{color:var(--ink);font-weight:600;}
 
-.bar{display:flex;align-items:center;justify-content:space-between;
-  font-family:var(--display);font-weight:600;font-size:1.15rem;
-  letter-spacing:.2em;text-transform:uppercase;color:var(--muted);flex-shrink:0;}
-.brand{display:flex;align-items:center;gap:.55rem;}
-.dot{width:.55rem;height:.55rem;border-radius:50%;background:var(--accent);
-  box-shadow:0 0 .6rem var(--accent);animation:pulse 3.4s ease-in-out infinite;}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
-.batt{font-variant-numeric:tabular-nums;}
+/* ---- relógio ---- */
+.clock{
+  flex:0 0 auto;
+  display:flex;align-items:baseline;justify-content:space-between;
+  padding:.55rem 1.3rem;
+}
+.clock-time{
+  font-family:var(--display);font-weight:700;font-size:3rem;line-height:1;
+  font-variant-numeric:tabular-nums;letter-spacing:.01em;
+}
+.clock-time .s{font-size:.4em;color:var(--amber);font-weight:600;margin-left:.15em;}
+.clock-date{font-size:1.2rem;color:var(--muted);text-transform:capitalize;letter-spacing:.02em;}
 
-.grid{flex:1;display:flex;gap:1rem;min-height:0;}
-.col{display:flex;flex-direction:column;gap:.9rem;min-width:0;}
+/* ---- combustível ---- */
+.fuel{flex:0 0 auto;padding:.6rem 1.1rem .7rem;}
+.fuel.reserva{background:var(--alert-soft);border-color:var(--alert);}
+.fuel-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.55rem;}
+.fuel-range{display:flex;align-items:baseline;gap:.5rem;}
+.fuel-range .km{font-family:var(--display);font-weight:700;font-size:2.5rem;line-height:.9;
+  font-variant-numeric:tabular-nums;color:var(--amber);}
+.fuel.reserva .fuel-range .km{color:var(--alert);}
+.fuel-range .lbl{font-size:1.05rem;color:var(--muted);}
+.fuel-btn{
+  font-family:var(--display);font-weight:600;font-size:1.1rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--bg);background:var(--amber);
+  border:none;border-radius:99px;padding:.5rem 1.1rem;cursor:pointer;
+  transition:transform .12s ease,filter .12s ease;
+}
+.fuel-btn:active{transform:scale(.95);filter:brightness(1.1);}
+.fuel.reserva .fuel-btn{background:var(--alert);color:#fff;}
+.fuel-bar{height:.6rem;background:var(--surface-2);border-radius:99px;overflow:hidden;
+  border:1px solid var(--line);}
+.fuel-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--amber-dim),var(--amber));
+  transition:width 1s cubic-bezier(.22,1,.36,1);}
+.fuel.reserva .fuel-fill{background:var(--alert);}
+.fuel-sub{display:flex;justify-content:space-between;margin-top:.4rem;
+  font-size:.95rem;color:var(--muted);letter-spacing:.02em;}
 
-.module{background:var(--mod-bg);border:1px solid var(--line);border-radius:var(--radius);
-  position:relative;overflow:hidden;transition:background .8s ease,border-color .8s ease;}
-.module::before{content:"";position:absolute;top:0;left:8%;right:8%;height:1px;
-  background:linear-gradient(90deg,transparent,var(--line),transparent);}
-.m-label{font-family:var(--display);font-size:1.05rem;font-weight:600;letter-spacing:.2em;
-  text-transform:uppercase;color:var(--muted);white-space:nowrap;}
-
-/* --- módulo principal --- */
-.primary{flex:1.5;display:flex;flex-direction:column;justify-content:center;
-  padding:0 1.4rem;min-width:0;}
-.p-value{font-family:var(--display);font-weight:700;font-size:6rem;line-height:.88;
-  font-variant-numeric:tabular-nums;letter-spacing:-.01em;white-space:nowrap;
-  margin-top:.2rem;text-shadow:0 .2rem 1.4rem rgba(0,0,0,.30);}
-.p-value .unit{font-size:.24em;font-weight:600;color:var(--muted);margin-left:.12em;letter-spacing:.06em;}
-.p-value .sec{font-size:.28em;font-weight:600;color:var(--accent);margin-left:.12em;}
-.dest-row{display:flex;align-items:center;justify-content:space-between;gap:.8rem;
-  margin-top:.7rem;padding-top:.7rem;border-top:1px solid var(--line);cursor:pointer;
-  white-space:nowrap;min-width:0;}
-.dest-txt{display:flex;flex-direction:column;min-width:0;}
-.dest-k{font-family:var(--display);font-size:1rem;font-weight:600;letter-spacing:.18em;
-  text-transform:uppercase;color:var(--ink);opacity:.62;}
-.dest-name{font-size:1.45rem;color:var(--ink);overflow:hidden;text-overflow:ellipsis;}
-.dest-right{display:flex;align-items:center;gap:.6rem;flex-shrink:0;}
-.dest-arrow{width:2.2rem;height:2.2rem;fill:var(--accent);
-  transition:transform .6s ease;}
+/* ---- destino ---- */
+.dest{flex:0 0 auto;padding:.6rem 1.1rem;cursor:pointer;}
+.dest-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:.15rem;}
+.dest-name{font-size:1.5rem;font-weight:600;line-height:1.1;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.dest-body{display:flex;align-items:flex-end;justify-content:space-between;gap:.8rem;}
+.dest-nums{display:flex;align-items:baseline;gap:.6rem;min-width:0;}
+.dest-dist{font-family:var(--display);font-weight:700;font-size:2.1rem;line-height:.9;
+  font-variant-numeric:tabular-nums;color:var(--amber);}
+.dest-eta{font-size:1.05rem;color:var(--muted);white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums;}
+.dest-arrow{width:2.6rem;height:2.6rem;fill:var(--amber);flex-shrink:0;transition:transform .6s ease;}
 .dest-arrow[hidden]{display:none;}
-.dest-nums{display:flex;flex-direction:column;align-items:flex-end;}
-.dest-dist{font-family:var(--display);font-weight:700;font-size:2.1rem;line-height:1.05;
-  font-variant-numeric:tabular-nums;color:var(--ink);}
-.dest-eta{font-size:1.05rem;color:var(--ink);opacity:.6;font-variant-numeric:tabular-nums;}
 
-.speed-row{display:flex;align-items:baseline;gap:.7rem;margin-top:.7rem;padding-top:.7rem;
-  border-top:1px solid var(--line);white-space:nowrap;}
-.sp-label{font-family:var(--display);font-size:1rem;font-weight:600;letter-spacing:.18em;
-  text-transform:uppercase;color:var(--ink);opacity:.62;}
-.sp-value{font-family:var(--display);font-weight:700;font-size:3.4rem;line-height:1;
-  font-variant-numeric:tabular-nums;color:var(--ink);opacity:.45;
-  transition:opacity .4s ease,color .4s ease;}
-.sp-value.rodando{opacity:1;color:var(--accent);}
-.sp-state{font-size:1.1rem;color:var(--ink);opacity:.55;letter-spacing:.02em;
-  overflow:hidden;text-overflow:ellipsis;}
+/* ---- clima ---- */
+.wx{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;
+  padding:.55rem 1.1rem;}
+.wx-left{display:flex;align-items:baseline;gap:.7rem;}
+.wx-temp{font-family:var(--display);font-weight:700;font-size:2.3rem;line-height:1;
+  font-variant-numeric:tabular-nums;}
+.wx-desc{font-size:1.2rem;color:var(--muted);}
 
-/* --- coluna do meio --- */
-.mid{flex:1.05;min-width:0;}
-.weather{flex:1;padding:1rem;display:flex;flex-direction:column;justify-content:center;gap:.2rem;}
-.w-temp{font-family:var(--display);font-weight:700;font-size:5.2rem;line-height:1;
-  font-variant-numeric:tabular-nums;margin-top:.3rem;}
-.w-desc{font-size:1.35rem;color:var(--ink);opacity:.85;overflow:hidden;text-overflow:ellipsis;}
-
-/* --- botão maps --- */
-.cta{flex:.8;padding:0 .6rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.7rem;
-  text-decoration:none;color:var(--ink);background:var(--accent-soft);
-  border:1px solid var(--accent);cursor:pointer;
-  transition:transform .12s ease,background .12s ease;}
-.cta:active{transform:scale(.975);background:var(--accent);}
-.cta-icon{width:3.2rem;height:3.2rem;stroke:var(--accent);fill:none;stroke-width:1.7;
-  stroke-linecap:round;stroke-linejoin:round;}
-.cta-label{font-family:var(--display);font-weight:700;font-size:1.55rem;letter-spacing:.04em;
-  text-transform:uppercase;white-space:nowrap;}
-.cta-sub{font-size:1.05rem;color:var(--muted);letter-spacing:.03em;white-space:nowrap;}
-
-/* ============ RODAPÉ ============ */
-.strip{display:flex;align-items:center;gap:1.5rem;height:3.9rem;padding:0 1.1rem;flex-shrink:0;
-  background:var(--strip-bg);border:1px solid var(--line);border-radius:var(--radius);
-  transition:background .8s ease;}
-.stat{display:flex;flex-direction:column;gap:.15rem;flex-shrink:0;}
-.stat .k{font-family:var(--display);font-size:1rem;letter-spacing:.18em;font-weight:600;
-  text-transform:uppercase;color:var(--ink);opacity:.62;white-space:nowrap;}
-.stat .v{font-family:var(--display);font-weight:600;font-size:1.9rem;line-height:1;
+/* ---- rodapé ---- */
+.strip{flex:0 0 auto;display:flex;align-items:center;gap:1.1rem;
+  padding:.7rem 1.1rem;}
+.stat{display:flex;flex-direction:column;gap:.1rem;flex-shrink:0;}
+.stat .k{font-family:var(--display);font-size:.9rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);white-space:nowrap;}
+.stat .v{font-family:var(--display);font-weight:600;font-size:1.55rem;line-height:1;
   font-variant-numeric:tabular-nums;white-space:nowrap;}
-.stat .v small{font-size:.52em;color:var(--ink);opacity:.55;font-weight:500;margin-left:.15em;}
-.trip{position:relative;}
-.trip.holding .v{color:var(--accent);}
-
-.daylight{flex:1;display:flex;flex-direction:column;gap:.45rem;min-width:0;}
-.dl-top{display:flex;justify-content:space-between;gap:.8rem;font-family:var(--display);
-  font-size:1rem;letter-spacing:.16em;font-weight:600;text-transform:uppercase;
-  color:var(--ink);opacity:.62;white-space:nowrap;}
+.stat .v small{font-size:.5em;color:var(--muted);font-weight:500;margin-left:.15em;}
+.trip{cursor:pointer;position:relative;}
+.trip.holding .v{color:var(--amber);}
+.daylight{flex:1;display:flex;flex-direction:column;gap:.35rem;min-width:0;}
+.dl-top{display:flex;justify-content:space-between;gap:.6rem;font-family:var(--display);
+  font-size:.9rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);white-space:nowrap;}
 .dl-top span:last-child{overflow:hidden;text-overflow:ellipsis;}
-.dl-track{height:.35rem;background:var(--line);border-radius:99px;overflow:hidden;}
-.dl-fill{height:100%;width:0;border-radius:99px;
-  background:linear-gradient(90deg,var(--accent),var(--sun));
+.dl-track{height:.3rem;background:var(--surface-2);border-radius:99px;overflow:hidden;}
+.dl-fill{height:100%;width:0;border-radius:99px;background:var(--amber);
   transition:width 1.2s cubic-bezier(.22,1,.36,1);}
 
-/* ============ IGNIÇÃO ============ */
-.module,.strip>*{opacity:0;transform:translateY(.6rem);
-  animation:rise .55s cubic-bezier(.22,1,.36,1) forwards;}
-.primary{animation-delay:.05s}
-.mid{animation-delay:.14s}
-.cta{animation-delay:.22s}
-.strip>*:nth-child(1){animation-delay:.30s}
-.strip>*:nth-child(2){animation-delay:.36s}
-.strip>*:nth-child(3){animation-delay:.42s}
+/* ---- ignição ---- */
+.mod{opacity:0;transform:translateY(.6rem);animation:rise .5s cubic-bezier(.22,1,.36,1) forwards;}
+.speed{animation-delay:.04s}
+.clock{animation-delay:.10s}
+.fuel{animation-delay:.16s}
+.dest{animation-delay:.22s}
+.wx{animation-delay:.28s}
+.strip{animation-delay:.34s}
 @keyframes rise{to{opacity:1;transform:none;}}
-
 @media (prefers-reduced-motion:reduce){
-  *{animation:none!important;transition:none!important;}
-  .module,.strip>*{opacity:1;transform:none;}
+  .mod{opacity:1;transform:none;animation:none;}
 }
 
-/* ============ HISTÓRICO ============ */
-.sheet{position:fixed;inset:0;z-index:9;background:rgba(0,0,0,.6);
-  display:flex;align-items:center;justify-content:center;padding:1rem;}
+/* ---- folhas (destino/histórico) ---- */
+.sheet{position:fixed;inset:0;z-index:9;background:rgba(0,0,0,.72);
+  display:flex;align-items:flex-end;justify-content:center;padding:0;}
 .sheet[hidden]{display:none;}
-.sheet-card{width:min(100%,44rem);max-height:100%;display:flex;flex-direction:column;
-  background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
-  padding:1rem 1.2rem;gap:.7rem;}
+.sheet-card{width:100%;max-height:90%;display:flex;flex-direction:column;
+  background:var(--surface);border-top:1px solid var(--line-2);
+  border-radius:1.4rem 1.4rem 0 0;padding:1.1rem 1.1rem 1.4rem;gap:.7rem;}
 .sheet-head{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;}
-.sheet-head h2{font-family:var(--display);font-size:1.5rem;font-weight:700;
-  letter-spacing:.16em;text-transform:uppercase;color:var(--ink);}
-.sheet-total{font-family:var(--display);font-size:1.15rem;letter-spacing:.1em;
-  text-transform:uppercase;color:var(--ink);opacity:.7;}
-.sheet-total b{font-size:1.5rem;font-weight:700;opacity:1;}
+.sheet-head h2{font-family:var(--display);font-size:1.6rem;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;}
+.sheet-total{font-family:var(--display);font-size:1.2rem;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--muted);}
+.sheet-total b{font-size:1.4rem;font-weight:700;color:var(--ink);}
+.campo{width:100%;padding:.75rem .85rem;font-family:var(--body);font-size:1.3rem;
+  color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:.6rem;}
+.campo:focus{outline:none;border-color:var(--amber);}
+.dica{font-size:1.05rem;color:var(--muted);line-height:1.35;}
 .sheet-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;
-  border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
-.row{display:flex;align-items:baseline;gap:.8rem;padding:.45rem 0;
-  border-bottom:1px solid var(--line);}
-.row:last-child{border-bottom:0;}
-.row .d{flex:1;font-size:1.2rem;color:var(--ink);opacity:.8;text-transform:capitalize;}
-.row .km{font-family:var(--display);font-weight:700;font-size:1.5rem;
-  font-variant-numeric:tabular-nums;color:var(--ink);}
-.row .vx{width:6.5rem;text-align:right;font-size:1.1rem;color:var(--ink);opacity:.55;
-  font-variant-numeric:tabular-nums;}
-.row.hoje .km{color:var(--accent);}
-.vazio{padding:1.2rem 0;font-size:1.2rem;color:var(--ink);opacity:.55;}
-.campo{width:100%;padding:.7rem .8rem;font-family:var(--body);font-size:1.3rem;
-  color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:.5rem;}
-.campo:focus{outline:none;border-color:var(--accent);}
-.dica{font-size:1.05rem;color:var(--ink);opacity:.6;line-height:1.35;}
-.res{padding:.5rem 0;border-bottom:1px solid var(--line);font-size:1.2rem;cursor:pointer;}
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);min-height:2rem;}
+.res{display:flex;align-items:center;gap:.7rem;padding:.55rem 0;border-bottom:1px solid var(--line);cursor:pointer;}
 .res:last-child{border-bottom:0;}
-.res b{display:block;font-weight:600;}
-.res span{opacity:.6;font-size:.9em;}
-.sheet-actions{display:flex;gap:.6rem;}
-.sheet-actions button{flex:1;padding:.6rem;background:transparent;cursor:pointer;
-  border:1px solid var(--line);border-radius:.5rem;color:var(--ink);
-  font-family:var(--display);font-size:1.15rem;font-weight:600;
-  letter-spacing:.12em;text-transform:uppercase;}
-.sheet-actions button.perigo{border-color:var(--accent);color:var(--accent);}
-.sheet-actions button:active{background:var(--accent-soft);}
-
-/* ================================================================
-   MODO COPILOTO — entra sozinho em tela dividida (pouca largura
-   ou formato quase quadrado). Some o botão do Maps e a interface
-   assume a linguagem visual do Google Maps.
-   ================================================================ */
-@media (max-width:560px), (max-aspect-ratio:13/10), (max-height:280px){
-
-  body{ --display:'Roboto',system-ui,sans-serif; --body:'Roboto',system-ui,sans-serif;
-        font-size:clamp(11px,3.6vh,16px); }
-
-  body.t-dia, body.t-tarde{
-    --surface:#FFFFFF; --ink:#202124; --muted:#5F6368; --line:#DADCE0;
-    --accent:#1A73E8; --mod-bg:#FFFFFF; --strip-bg:#FFFFFF; --card:#FFFFFF;
-    --sombra:0 1px 3px rgba(60,64,67,.25);
-  }
-  body.t-noite{
-    --surface:#202124; --ink:#E8EAED; --muted:#9AA0A6; --line:#3C4043;
-    --accent:#8AB4F8; --mod-bg:#292A2D; --strip-bg:#292A2D; --card:#202124;
-    --sombra:none;
-  }
-
-  body{background:var(--surface);}
-  .sky,.grain{display:none;}
-  .cta{display:none;}                    /* o Maps já está do lado */
-
-  .panel{padding:.7rem;gap:.6rem;}
-  .bar{font-size:1rem;letter-spacing:.06em;text-transform:none;font-weight:500;}
-  .brand{display:none;}
-  .date{order:1;} .batt{order:2;}
-
-  .grid{flex-direction:column;gap:.6rem;}
-  .module{background:var(--mod-bg);border:1px solid var(--line);border-radius:.9rem;
-          box-shadow:var(--sombra);}
-  .module::before{display:none;}
-  .m-label{font-size:.95rem;letter-spacing:.04em;text-transform:none;font-weight:500;}
-
-  .primary{flex:0 0 auto;padding:.7rem .9rem;}
-  .p-value{font-size:4.6rem;line-height:1;margin-top:.1rem;text-shadow:none;letter-spacing:-.02em;}
-  .p-value .sec{font-size:.3em;color:var(--muted);}
-  .speed-row{margin-top:.5rem;padding-top:.5rem;gap:.5rem;}
-  .sp-label{display:none;}
-  .sp-value{font-size:2.4rem;opacity:.4;}
-  .sp-value.rodando{color:var(--ink);opacity:1;}
-  .sp-value .unit{font-size:.32em;}
-  .sp-state{margin-left:auto;font-size:.95rem;padding:.15rem .6rem;border-radius:99px;
-            background:var(--line);opacity:1;color:var(--muted);}
-
-  .mid{flex:1;gap:.6rem;min-height:0;}
-  .weather{flex:1;padding:.6rem .9rem;gap:.05rem;}
-  .w-temp{font-size:2.4rem;margin-top:0;}
-  .w-desc{font-size:1.05rem;}
-
-  .dest-row{margin-top:.5rem;padding-top:.5rem;}
-  .dest-k{font-size:.85rem;letter-spacing:.04em;text-transform:none;font-weight:500;}
-  .dest-name{font-size:1.15rem;}
-  .dest-dist{font-size:1.5rem;}
-  .dest-eta{font-size:.9rem;}
-  .dest-arrow{width:1.6rem;height:1.6rem;}
-  .campo{font-size:1.15rem;border-radius:.5rem;}
-
-  .strip{height:auto;padding:.55rem .9rem;gap:1rem;border-radius:.9rem;
-         box-shadow:var(--sombra);}
-  .stat .k{font-size:.85rem;letter-spacing:.04em;text-transform:none;font-weight:500;opacity:.75;}
-  .stat .v{font-size:1.4rem;}
-  .daylight{gap:.3rem;}
-  .dl-top{font-size:.85rem;letter-spacing:.04em;text-transform:none;font-weight:500;}
-  .dl-track{height:.28rem;}
-  .dl-fill{background:var(--accent);}
-
-  .sheet-card{background:var(--card);}
-  .sheet-head h2{font-size:1.3rem;letter-spacing:.04em;text-transform:none;}
-  .sheet-actions button{border-radius:99px;text-transform:none;letter-spacing:.03em;}
-}
-
-/* tela larga e baixa: usa o visual compacto, mas mantém o botão do Maps
-   (pode ser um aparelho pequeno em tela cheia, e aí o botão faz falta) */
-@media (min-width:561px) and (min-aspect-ratio:13/10){
-  .cta{display:flex;flex:.55;gap:.4rem;}
-  .cta-icon{width:2rem;height:2rem;}
-  .cta-label{font-size:1.15rem;}
-  .cta-sub{display:none;}
-  .grid{flex-direction:row;}
-  .mid{flex:1;}
-}
-
-/* faixa muito baixa (divisão em cima/embaixo com a tela deitada) */
-@media (max-height:250px){
-  .daylight{display:none;}
-  .p-value{font-size:3.6rem;}
-  .weather{flex:1;}
-}
+.res .txt{flex:1;min-width:0;}
+.res b{display:block;font-weight:600;font-size:1.2rem;}
+.res span{opacity:.6;font-size:1rem;}
+.res .n{flex-shrink:0;width:1.8rem;height:1.8rem;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--line-2);font-size:1rem;font-family:var(--display);}
+.res.atual .n{background:var(--amber);border-color:var(--amber);color:var(--bg);}
+.res.feita{opacity:.45;}
+.res .x{flex-shrink:0;padding:.2rem .55rem;opacity:.5;font-size:1.4rem;}
+.row{display:flex;align-items:baseline;gap:.7rem;padding:.5rem 0;border-bottom:1px solid var(--line);}
+.row:last-child{border-bottom:0;}
+.row .d{flex:1;font-size:1.2rem;color:var(--ink);opacity:.8;}
+.row.hoje .d, .shList .row .d{text-transform:capitalize;}
+.row .km{font-family:var(--display);font-weight:700;font-size:1.5rem;color:var(--ink);
+  font-variant-numeric:tabular-nums;}
+.row .vx{width:6rem;text-align:right;font-size:1.05rem;color:var(--muted);
+  font-variant-numeric:tabular-nums;}
+.row.hoje .km{color:var(--amber);}
+.vazio{padding:1.2rem 0;font-size:1.15rem;color:var(--muted);}
+.sheet-actions{display:flex;gap:.5rem;flex-wrap:wrap;}
+.sheet-actions button{flex:1;min-width:5rem;padding:.65rem .4rem;background:var(--surface-2);cursor:pointer;
+  border:1px solid var(--line);border-radius:.6rem;color:var(--ink);
+  font-family:var(--display);font-size:1.05rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;line-height:1.1;}
+.sheet-actions button.perigo{border-color:var(--alert);color:var(--alert);}
+.sheet-actions button:active{background:var(--amber-soft);}
 </style>
 </head>
-<body class="t-dia">
-
-<div class="sky">
-  <div class="stars" id="stars"></div>
-  <div class="sun" id="sun" style="left:50%;top:30%"></div>
-  <div class="ridge ridge-far"></div>
-  <div class="ridge ridge-near"></div>
-</div>
-<div class="grain"></div>
+<body>
 
 <main class="panel">
 
-  <header class="bar">
-    <span class="brand"><i class="dot"></i><span id="brandTxt">Painel de bordo</span></span>
-    <span class="date" id="dateRow">—</span>
+  <header class="topbar">
+    <span id="dateRow">—</span>
     <span class="batt" id="batt">—</span>
   </header>
 
-  <section class="grid">
-
-    <div class="module primary">
-      <div class="m-label">Hora</div>
-      <div class="p-value" id="clockValue">--:--</div>
-      <div class="dest-row" id="destRow">
-        <div class="dest-txt">
-          <span class="dest-k">Indo para</span>
-          <span class="dest-name" id="destName">toque para definir</span>
-        </div>
-        <div class="dest-right">
-          <svg class="dest-arrow" id="destArrow" viewBox="0 0 24 24" hidden>
-            <path d="M12 3 L19 20 L12 16 L5 20 Z"></path>
-          </svg>
-          <div class="dest-nums">
-            <span class="dest-dist" id="destDist"></span>
-            <span class="dest-eta" id="destEta"></span>
-          </div>
-        </div>
-      </div>
-
-      <div class="speed-row">
-        <span class="sp-label">Vel</span>
-        <span class="sp-value" id="speedValue">0<span class="unit">km/h</span></span>
-        <span class="sp-state" id="speedState">sem GPS</span>
-      </div>
+  <section class="mod speed">
+    <div class="mlabel">Velocidade</div>
+    <div class="speed-num" id="speedValue">0<span class="u">km/h</span></div>
+    <div class="speed-foot">
+      <span class="speed-state" id="speedState">sem GPS</span>
+      <span class="speed-max" id="speedMax">máx <b>0</b> km/h</span>
     </div>
-
-    <div class="col mid">
-      <div class="module weather">
-        <div class="m-label">Tempo agora</div>
-        <span class="w-temp" id="wTemp">--°</span>
-        <div class="w-desc" id="wDesc">sem dados</div>
-      </div>
-    </div>
-
-    <a class="module cta" id="mapsBtn" href="https://www.google.com/maps">
-      <svg class="cta-icon" viewBox="0 0 24 24">
-        <path d="M21 10c0 6-9 12-9 12S3 16 3 10a9 9 0 1 1 18 0z"></path>
-        <circle cx="12" cy="10" r="3"></circle>
-      </svg>
-      <span class="cta-label">Abrir Maps</span>
-      <span class="cta-sub">Toque para navegar</span>
-    </a>
-
   </section>
 
-  <footer class="strip">
+  <section class="mod clock">
+    <div class="clock-time" id="clockValue">--:--</div>
+    <div class="clock-date" id="clockDate">—</div>
+  </section>
+
+  <section class="mod fuel" id="fuelBox">
+    <div class="fuel-top">
+      <div class="fuel-range">
+        <span class="km" id="fuelKm">—</span>
+        <span class="lbl" id="fuelLbl">de autonomia</span>
+      </div>
+      <button class="fuel-btn" id="fuelBtn">Abasteci</button>
+    </div>
+    <div class="fuel-bar"><div class="fuel-fill" id="fuelFill"></div></div>
+    <div class="fuel-sub">
+      <span id="fuelUsed">tanque cheio</span>
+      <span id="fuelAvg">—</span>
+    </div>
+  </section>
+
+  <section class="mod dest" id="destRow">
+    <div class="dest-head">
+      <span class="mlabel dest-k">Indo para</span>
+      <svg class="dest-arrow" id="destArrow" viewBox="0 0 24 24" hidden>
+        <path d="M12 3 L19 20 L12 16 L5 20 Z"></path>
+      </svg>
+    </div>
+    <div class="dest-name" id="destName">toque para definir</div>
+    <div class="dest-body">
+      <div class="dest-nums">
+        <span class="dest-dist" id="destDist"></span>
+        <span class="dest-eta" id="destEta"></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="mod wx">
+    <div class="wx-left">
+      <span class="wx-temp" id="wTemp">--°</span>
+      <span class="wx-desc" id="wDesc">sem dados</span>
+    </div>
+    <div class="mlabel">Tempo</div>
+  </section>
+
+  <footer class="mod strip">
     <div class="stat trip" id="tripBox">
       <span class="k">Trecho</span>
       <span class="v" id="tripVal">0,0<small>km</small></span>
     </div>
     <div class="stat">
-      <span class="k">Altitude</span>
+      <span class="k">Alt</span>
       <span class="v" id="altVal">—<small>m</small></span>
     </div>
     <div class="daylight">
-      <div class="dl-top"><span id="dlLabel">Luz do dia</span><span id="dlRight">—</span></div>
+      <div class="dl-top"><span id="dlLabel">Luz</span><span id="dlRight">—</span></div>
       <div class="dl-track"><div class="dl-fill" id="dlFill"></div></div>
     </div>
   </footer>
@@ -423,14 +333,18 @@ body{
 
 <div class="sheet" id="destSheet" hidden>
   <div class="sheet-card">
-    <div class="sheet-head"><h2>Destino</h2></div>
+    <div class="sheet-head">
+      <h2 id="destTitulo">Destino</h2>
+      <div class="sheet-total" id="viagemResumo"></div>
+    </div>
     <input id="destInput" class="campo" type="text" autocomplete="off"
            placeholder="Cole o link do Maps ou digite o lugar">
-    <div class="dica" id="destDica">Com internet, ele busca a distância real da estrada. Sem internet, use um link do Maps com as coordenadas.</div>
-    <div class="sheet-list" id="destResults"></div>
+    <div class="dica" id="destDica"></div>
+    <div class="sheet-list" id="destCorpo"></div>
     <div class="sheet-actions">
-      <button id="destSet">Definir</button>
-      <button id="destClear" class="perigo">Limpar</button>
+      <button id="destSet">Ir agora</button>
+      <button id="destAdd">+ Parada</button>
+      <button id="viagemMenu">Viagens</button>
       <button id="destClose">Fechar</button>
     </div>
   </div>
@@ -451,11 +365,126 @@ body{
   </div>
 </div>
 
+<div class="sheet" id="fuelSheet" hidden>
+  <div class="sheet-card">
+    <div class="sheet-head"><h2>Combustível</h2></div>
+    <div class="dica">Confirme quando encher o tanque. O app conta os km e aprende o consumo real da sua moto a cada abastecimento.</div>
+    <div class="sheet-list" id="fuelInfo"></div>
+    <label class="dica" for="tankInput">Tamanho do tanque (litros)</label>
+    <input id="tankInput" class="campo" type="number" inputmode="decimal" step="0.1" placeholder="12">
+    <label class="dica" for="kmlInput">Consumo estimado (km por litro)</label>
+    <input id="kmlInput" class="campo" type="number" inputmode="decimal" step="0.1" placeholder="38">
+    <div class="sheet-actions">
+      <button id="fuelFull">Enchi o tanque</button>
+      <button id="fuelSave">Salvar ajustes</button>
+      <button id="fuelClose">Fechar</button>
+    </div>
+  </div>
+</div>
+
+
 <script>
 "use strict";
 
+
 const $ = id => document.getElementById(id);
 const pad = n => String(n).padStart(2,'0');
+
+  /* ---------- combustível ---------- */
+  let fuel = {tanque:12, kml:38, desde:0, ultimos:[]};
+  try{ Object.assign(fuel, JSON.parse(localStorage.getItem('fuel') || '{}')); }catch(e){}
+  let vmaxHoje = parseFloat(localStorage.getItem('vmaxHoje_v') || '0');
+  // zera a máxima quando vira o dia
+  (function(){
+    const hoje = new Date().toDateString();
+    if(localStorage.getItem('vmaxHoje_dia') !== hoje){
+      vmaxHoje = 0;
+      localStorage.setItem('vmaxHoje_dia', hoje);
+      localStorage.setItem('vmaxHoje_v','0');
+    }
+  })();
+
+  function salvaFuel(){
+    try{
+      localStorage.setItem('fuel', JSON.stringify(fuel));
+      localStorage.setItem('vmaxHoje_v', String(vmaxHoje));
+    }catch(e){}
+  }
+
+  function atualizaFuel(){
+    const autonomia = fuel.tanque * fuel.kml;      // km com tanque cheio
+    const restante = Math.max(0, autonomia - fuel.desde);
+    const frac = autonomia > 0 ? restante/autonomia : 0;
+    const reservaKm = fuel.tanque * 0.2 * fuel.kml; // ~20% do tanque
+
+    $('fuelKm').textContent = Math.round(restante);
+    $('fuelFill').style.width = (frac*100).toFixed(1)+'%';
+    $('fuelUsed').textContent = 'rodou ' + fuel.desde.toFixed(0) + ' km neste tanque';
+    $('fuelAvg').textContent = fuel.ultimos.length
+      ? 'média real ' + fuel.kml.toFixed(1).replace('.',',') + ' km/l'
+      : 'estimado ' + fuel.kml.toFixed(0) + ' km/l';
+
+    const box = $('fuelBox');
+    if(restante <= reservaKm){
+      box.classList.add('reserva');
+      $('fuelLbl').textContent = restante <= 0 ? 'tanque na reserva' : 'até a reserva';
+    } else {
+      box.classList.remove('reserva');
+      $('fuelLbl').textContent = 'de autonomia';
+    }
+  }
+
+  function abasteci(){
+    // aprende o consumo real: km rodados / litros gastos no tanque anterior
+    if(fuel.desde > fuel.tanque * 2){  // rodou bastante, dá pra aprender
+      const litrosGastos = fuel.tanque;           // encheu de novo = gastou ~1 tanque
+      const kmlReal = fuel.desde / litrosGastos;
+      if(kmlReal > 10 && kmlReal < 80){
+        fuel.ultimos.push(kmlReal);
+        if(fuel.ultimos.length > 5) fuel.ultimos.shift();
+        // média dos últimos, suavizada
+        fuel.kml = fuel.ultimos.reduce((a,b)=>a+b,0) / fuel.ultimos.length;
+      }
+    }
+    fuel.desde = 0;
+    salvaFuel();
+    atualizaFuel();
+    if(navigator.vibrate) navigator.vibrate(50);
+  }
+
+  $('fuelBtn').addEventListener('click', e => { e.stopPropagation(); abreFuel(); });
+
+  function abreFuel(){
+    $('tankInput').value = fuel.tanque;
+    $('kmlInput').value = fuel.kml.toFixed(1);
+    const autonomia = fuel.tanque * fuel.kml;
+    $('fuelInfo').innerHTML =
+      '<div class="row"><span class="d">Autonomia com tanque cheio</span>'+
+        '<span class="km">'+Math.round(autonomia)+' km</span></div>'+
+      '<div class="row"><span class="d">Rodado neste tanque</span>'+
+        '<span class="km">'+fuel.desde.toFixed(0)+' km</span></div>'+
+      (fuel.ultimos.length
+        ? '<div class="row"><span class="d">Consumo aprendido</span><span class="km">'+
+          fuel.kml.toFixed(1).replace('.',',')+' km/l</span></div>'
+        : '<div class="row"><span class="d">Consumo</span><span class="km">'+
+          fuel.kml.toFixed(0)+' km/l (estimado)</span></div>');
+    $('fuelSheet').hidden = false;
+  }
+
+  $('fuelFull').addEventListener('click', () => { abasteci(); $('fuelSheet').hidden = true; });
+  $('fuelSave').addEventListener('click', () => {
+    const t = parseFloat($('tankInput').value.replace(',','.'));
+    const k = parseFloat($('kmlInput').value.replace(',','.'));
+    if(t > 0) fuel.tanque = t;
+    if(k > 0){ fuel.kml = k; fuel.ultimos = []; }  // ajuste manual reinicia o aprendizado
+    salvaFuel(); atualizaFuel();
+    $('fuelSheet').hidden = true;
+  });
+  $('fuelClose').addEventListener('click', () => { $('fuelSheet').hidden = true; });
+  $('fuelSheet').addEventListener('click', e => { if(e.target.id==='fuelSheet') $('fuelSheet').hidden = true; });
+
+  atualizaFuel();
+
 
 /* ---------- estado ---------- */
 let sunrise = null, sunset = null;      // objetos Date do dia atual
@@ -509,65 +538,23 @@ document.addEventListener('visibilitychange', () => {
 let speedKmh = 0;
 let lastMoveAt = 0;
 
-/* ---------- estrelas (uma vez) ---------- */
-(function stars(){
-  const box = $('stars');
-  let html = '';
-  for(let i=0;i<46;i++){
-    const s = (Math.random()*1.6+0.8).toFixed(1);
-    html += '<i class="star" style="left:'+(Math.random()*100).toFixed(1)+'%;top:'+
-            (Math.random()*62).toFixed(1)+'%;width:'+s+'px;height:'+s+'px;animation-delay:'+
-            (Math.random()*4).toFixed(1)+'s"></i>';
-  }
-  box.innerHTML = html;
-})();
-
-/* ---------- céu: tema + posição do sol ---------- */
 function minutes(d){ return d.getHours()*60 + d.getMinutes(); }
 
+// só mantém a barra de luz do dia; sem tema/céu dinâmico
 function updateSky(){
   const now = new Date();
   const m = minutes(now);
   const rise = sunrise ? minutes(sunrise) : 6*60;
   const set  = sunset  ? minutes(sunset)  : 18*60+30;
-
-  let tema;
-  if(m < rise - 40 || m > set + 40)            tema = 't-noite';
-  else if(m < rise + 60 || m > set - 70)       tema = 't-tarde';
-  else                                          tema = 't-dia';
-  if(!document.body.classList.contains(tema)){
-    document.body.className = tema;
-    const cor = tema === 't-dia' ? '#8FA9B8' : tema === 't-tarde' ? '#2E3340' : '#0E1113';
-    const meta = document.querySelector('meta[name="theme-color"]');
-    if(meta) meta.setAttribute('content', cor);
-  }
-
-  // sol/lua percorre o arco entre nascer e pôr do sol
-  let p = (m - rise) / Math.max(set - rise, 1);
-  let arco = true;
-  if(p < 0 || p > 1){ // noite: a lua faz o caminho inverso
-    const noite = (m > set) ? (m - set) : (m + 1440 - set);
-    const dur = (rise + 1440 - set);
-    p = noite / dur;
-    arco = false;
-  }
-  p = Math.min(Math.max(p,0),1);
-  const x = 6 + p*88;
-  const y = arco ? (52 - Math.sin(p*Math.PI)*40) : (30 - Math.sin(p*Math.PI)*14);
-  const sun = $('sun');
-  sun.style.left = x.toFixed(1)+'%';
-  sun.style.top  = y.toFixed(1)+'%';
-
-  // barra de luz restante
   if(m >= rise && m <= set){
     const rest = set - m;
-    $('dlLabel').textContent = 'Luz do dia';
-    $('dlRight').textContent = Math.floor(rest/60)+'h'+pad(rest%60)+' até o pôr do sol';
+    $('dlLabel').textContent = 'Luz';
+    $('dlRight').textContent = Math.floor(rest/60)+'h'+pad(rest%60)+' de sol';
     $('dlFill').style.width = ((m-rise)/(set-rise)*100).toFixed(1)+'%';
   } else {
     const falta = m < rise ? (rise - m) : (rise + 1440 - m);
     $('dlLabel').textContent = 'Noite';
-    $('dlRight').textContent = 'nasce o sol em '+Math.floor(falta/60)+'h'+pad(falta%60);
+    $('dlRight').textContent = 'sol em '+Math.floor(falta/60)+'h'+pad(falta%60);
     $('dlFill').style.width = '100%';
   }
 }
@@ -576,21 +563,25 @@ function updateSky(){
 function updateMain(){
   const now = new Date();
 
-  // relógio: posição fixa, sempre visível
+  // relógio com segundos
   $('clockValue').innerHTML = pad(now.getHours())+':'+pad(now.getMinutes())+
-    '<span class="sec">'+pad(now.getSeconds())+'</span>';
-
-  // velocidade: linha própria, logo abaixo
-  const rodando = (Date.now() - lastMoveAt) < 9000 && speedKmh >= 3;
-  const vel = $('speedValue');
-  vel.innerHTML = Math.round(rodando ? speedKmh : 0) + '<span class="unit">km/h</span>';
-  vel.classList.toggle('rodando', rodando);
-  $('speedState').textContent = rodando ? 'rodando' : (lastFix ? 'parado' : 'sem GPS');
-  if(now.getSeconds() % 5 === 0) atualizaDestino();
-
+    '<span class="s">'+pad(now.getSeconds())+'</span>';
   const dias = ['dom','seg','ter','qua','qui','sex','sáb'];
   const meses = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  $('clockDate').textContent = dias[now.getDay()]+' '+now.getDate()+' '+meses[now.getMonth()];
   $('dateRow').textContent = dias[now.getDay()]+' '+now.getDate()+' '+meses[now.getMonth()];
+
+  // velocidade herói
+  const rodando = (Date.now() - lastMoveAt) < 9000 && speedKmh >= 3;
+  const vel = $('speedValue');
+  vel.innerHTML = Math.round(rodando ? speedKmh : 0) + '<span class="u">km/h</span>';
+  vel.classList.toggle('on', rodando);
+  const st = $('speedState');
+  st.textContent = rodando ? 'rodando' : (lastFix ? 'parado' : 'sem GPS');
+  st.classList.toggle('on', rodando);
+  $('speedMax').innerHTML = 'máx <b>'+Math.round(vmaxHoje)+'</b> km/h';
+
+  if(now.getSeconds() % 5 === 0) atualizaDestino();
 }
 
 /* ---------- GPS: velocidade, altitude, odômetro ---------- */
@@ -617,13 +608,17 @@ function onFix(pos){
     if(d > 0.004 && d < 1 && dt > 0 && (d/dt)*3600 < 220){
       trip += d;
       registraTrecho(d, (c.speed !== null && !isNaN(c.speed)) ? c.speed*3.6 : (d/dt)*3600);
+      fuel.desde += d;
+      salvaFuel();
       $('tripVal').innerHTML = trip.toFixed(1).replace('.',',')+'<small>km</small>';
+      atualizaFuel();
     }
   }
 
   if(v !== null){
     speedKmh = Math.max(0, v);
     if(speedKmh >= 3) lastMoveAt = Date.now();
+    if(speedKmh > vmaxHoje){ vmaxHoje = speedKmh; }
     // média só conta quando está realmente rodando
     if(speedKmh >= 8) vMedia = vMedia ? (vMedia*0.9 + speedKmh*0.1) : speedKmh;
   }
@@ -634,7 +629,8 @@ function onFix(pos){
   lastFix = agora;
 
   if(!fetchWeather.feito){ fetchWeather(agora.lat, agora.lon); fetchWeather.feito = true; }
-  if(destino && !destino.fator) buscaRota();
+  checaChegada();
+  if(alvoAtual() && !alvoAtual().fator) buscaRota();
   atualizaDestino();
 }
 
@@ -677,9 +673,14 @@ function zeraTrecho(){
   box.addEventListener('mouseleave', stop);
 })();
 
-/* ---------- destino ---------- */
-let destino = null;
-try{ destino = JSON.parse(localStorage.getItem('destino') || 'null'); }catch(e){ destino = null; }
+/* ---------- destino e viagem ---------- */
+let destino = null;    // destino avulso
+let viagem  = null;    // {nome, paradas:[{nome,lat,lon,fator,kmRota}], etapa}
+let viagens = {};      // viagens salvas
+try{ destino = JSON.parse(localStorage.getItem('destino') || 'null'); }catch(e){}
+try{ viagem  = JSON.parse(localStorage.getItem('viagem')  || 'null'); }catch(e){}
+try{ viagens = JSON.parse(localStorage.getItem('viagens') || '{}');  }catch(e){ viagens = {}; }
+
 let vMedia = 0;      // velocidade média em movimento, para estimar a chegada
 let heading = null;  // direção do aparelho, quando o GPS informa
 
@@ -692,82 +693,176 @@ function rumo(a, b){
 }
 const ROSA = ['N','NE','L','SE','S','SO','O','NO'];
 
-function atualizaDestino(){
-  const nomeEl = $('destName'), distEl = $('destDist'), etaEl = $('destEta'), setaEl = $('destArrow');
+function paradaAtual(){
+  if(viagem && viagem.paradas.length && viagem.etapa < viagem.paradas.length){
+    return viagem.paradas[viagem.etapa];
+  }
+  return null;
+}
+function alvoAtual(){ return paradaAtual() || destino; }
 
-  if(!destino){
-    nomeEl.textContent = 'toque para definir';
-    distEl.textContent = ''; etaEl.textContent = '';
-    setaEl.hidden = true;
+function fmtKm(km){
+  return (km < 10 ? km.toFixed(1).replace('.',',') : Math.round(km)) + ' km';
+}
+
+// soma o que falta da etapa atual até a última parada
+function totalRestante(){
+  if(!viagem || !lastFix || viagem.etapa >= viagem.paradas.length) return null;
+  let soma = 0, pos = lastFix;
+  for(let i = viagem.etapa; i < viagem.paradas.length; i++){
+    const p = viagem.paradas[i];
+    soma += haversine(pos, {lat:p.lat, lon:p.lon}) * (p.fator || 1);
+    pos = {lat:p.lat, lon:p.lon};
+  }
+  return soma;
+}
+
+function salvaDestino(){
+  try{
+    localStorage.setItem('destino', destino ? JSON.stringify(destino) : '');
+    localStorage.setItem('viagem',  viagem  ? JSON.stringify(viagem)  : '');
+    localStorage.setItem('viagens', JSON.stringify(viagens));
+  }catch(e){}
+  atualizaDestino();
+}
+
+function atualizaDestino(){
+  const kEl = document.querySelector('.dest-k');
+  const nomeEl = $('destName'), distEl = $('destDist'), etaEl = $('destEta'), setaEl = $('destArrow');
+  const alvo = alvoAtual();
+
+  // viagem terminada
+  if(viagem && viagem.etapa >= viagem.paradas.length && viagem.paradas.length){
+    kEl.textContent = 'Viagem';
+    nomeEl.textContent = viagem.nome + ' · concluída';
+    distEl.textContent = ''; etaEl.textContent = ''; setaEl.hidden = true;
     return;
   }
-  nomeEl.textContent = destino.nome;
+
+  if(!alvo){
+    kEl.textContent = 'Indo para';
+    nomeEl.textContent = 'toque para definir';
+    distEl.textContent = ''; etaEl.textContent = ''; setaEl.hidden = true;
+    return;
+  }
+
+  kEl.textContent = viagem
+    ? 'Etapa ' + (viagem.etapa+1) + ' de ' + viagem.paradas.length
+    : 'Indo para';
+  nomeEl.textContent = alvo.nome;
 
   if(!lastFix){
     distEl.textContent = '—'; etaEl.textContent = 'sem GPS'; setaEl.hidden = true;
     return;
   }
 
-  const alvo = {lat:destino.lat, lon:destino.lon};
-  const reta = haversine(lastFix, alvo);
-  const km = reta * (destino.fator || 1);
-  distEl.textContent = (km < 10 ? km.toFixed(1).replace('.',',') : Math.round(km)) + ' km';
+  const ponto = {lat:alvo.lat, lon:alvo.lon};
+  const km = haversine(lastFix, ponto) * (alvo.fator || 1);
+  distEl.textContent = fmtKm(km);
 
-  const partes = [ROSA[Math.round(rumo(lastFix, alvo)/45) % 8]];
-  if(!destino.fator) partes.push('reta');
+  const partes = [ROSA[Math.round(rumo(lastFix, ponto)/45) % 8]];
+  if(!alvo.fator) partes.push('reta');
   if(vMedia >= 8){
     const chegada = new Date(Date.now() + (km/vMedia)*3600000);
     partes.push(pad(chegada.getHours())+'h'+pad(chegada.getMinutes()));
+  }
+  const total = totalRestante();
+  if(total && viagem && viagem.etapa < viagem.paradas.length-1){
+    partes.push('total ' + Math.round(total) + ' km');
   }
   etaEl.textContent = partes.join(' · ');
 
   if(heading !== null){
     setaEl.hidden = false;
-    setaEl.style.transform = 'rotate(' + (rumo(lastFix, alvo) - heading) + 'deg)';
+    setaEl.style.transform = 'rotate(' + (rumo(lastFix, ponto) - heading) + 'deg)';
   } else {
     setaEl.hidden = true;
   }
 }
 
-function salvaDestino(){
-  try{ localStorage.setItem('destino', destino ? JSON.stringify(destino) : ''); }catch(e){}
-  atualizaDestino();
+// chegou na parada? passa para a próxima
+function checaChegada(){
+  const p = paradaAtual();
+  if(!p || !lastFix) return;
+  if(haversine(lastFix, {lat:p.lat, lon:p.lon}) < 0.4){
+    viagem.etapa++;
+    if(navigator.vibrate) navigator.vibrate([60,60,60]);
+    salvaDestino();
+    if(!$('destSheet').hidden && modoLista === 'paradas') renderCorpo();
+  }
 }
 
-// busca a distância real de estrada (uma vez, com internet)
+// distância real de estrada da etapa atual (uma vez, com internet)
 function buscaRota(){
-  if(!destino || !lastFix || destino.fator) return;
-  const a = lastFix, b = destino;
+  const alvo = alvoAtual();
+  if(!alvo || !lastFix || alvo.fator) return;
   const url = 'https://router.project-osrm.org/route/v1/driving/' +
-              a.lon+','+a.lat+';'+b.lon+','+b.lat+'?overview=false';
+              lastFix.lon+','+lastFix.lat+';'+alvo.lon+','+alvo.lat+'?overview=false';
   fetch(url).then(r => r.json()).then(j => {
     if(j && j.routes && j.routes[0]){
       const kmRota = j.routes[0].distance/1000;
-      const reta = haversine(a, {lat:b.lat, lon:b.lon});
+      const reta = haversine(lastFix, {lat:alvo.lat, lon:alvo.lon});
       if(reta > 0.5 && kmRota/reta < 4){
-        destino.kmRota = kmRota;
-        destino.fator = kmRota/reta;   // quanto a estrada serpenteia
+        alvo.kmRota = kmRota;
+        alvo.fator = kmRota/reta;
         salvaDestino();
       }
     }
   }).catch(()=>{});
 }
 
-/* ---------- folha do destino ---------- */
-function abreDestino(){
-  $('destInput').value = '';
-  $('destResults').innerHTML = '';
-  $('destDica').textContent = destino
-    ? 'Atual: ' + destino.nome + (destino.kmRota ? ' · rota de ' + Math.round(destino.kmRota) + ' km' : ' · sem rota calculada')
-    : 'Com internet, ele busca a distância real da estrada. Sem internet, cole um link do Maps que tenha as coordenadas.';
-  $('destSheet').hidden = false;
+/* ---------- folha de destino e viagem ---------- */
+let modoLista = 'paradas';   // 'paradas' | 'busca' | 'viagens'
+
+function dica(t){ $('destDica').textContent = t; }
+
+function dataCurta(){
+  const d = new Date(), m = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  return d.getDate() + ' ' + m[d.getMonth()];
 }
 
-function defineDestino(nome, lat, lon){
-  destino = {nome:nome, lat:lat, lon:lon, fator:null, kmRota:null};
-  salvaDestino();
-  buscaRota();
-  $('destSheet').hidden = true;
+function renderCorpo(){
+  const corpo = $('destCorpo');
+
+  if(modoLista === 'viagens'){
+    const ids = Object.keys(viagens);
+    $('destTitulo').textContent = 'Viagens salvas';
+    corpo.innerHTML = (viagem ? '<div class="res" data-salvar="1"><span class="n">+</span>'+
+        '<div class="txt"><b>Salvar a viagem atual</b><span>'+viagem.paradas.length+' paradas</span></div></div>' : '') +
+      (ids.length ? ids.map(id =>
+        '<div class="res" data-id="'+id+'"><span class="n">▸</span><div class="txt"><b>'+
+        viagens[id].nome+'</b><span>'+viagens[id].paradas.length+' paradas</span></div>'+
+        '<span class="x" data-del="'+id+'">✕</span></div>').join('')
+      : '<div class="vazio">Nenhuma viagem salva ainda.</div>');
+    return;
+  }
+
+  if(modoLista === 'paradas'){
+    $('destTitulo').textContent = viagem ? viagem.nome : 'Destino';
+    if(viagem && viagem.paradas.length){
+      corpo.innerHTML = viagem.paradas.map((p,i) =>
+        '<div class="res '+(i===viagem.etapa?'atual':(i<viagem.etapa?'feita':''))+'" data-etapa="'+i+'">'+
+        '<span class="n">'+(i+1)+'</span><div class="txt"><b>'+p.nome+'</b>'+
+        '<span>'+(p.kmRota ? Math.round(p.kmRota)+' km de estrada' : 'sem rota calculada')+'</span></div>'+
+        '<span class="x" data-rm="'+i+'">✕</span></div>').join('');
+    } else if(destino){
+      corpo.innerHTML = '<div class="res atual"><span class="n">●</span><div class="txt"><b>'+
+        destino.nome+'</b><span>destino avulso</span></div></div>';
+    } else {
+      corpo.innerHTML = '<div class="vazio">Digite um lugar e toque em "Ir agora" para um destino único, ou em "+ Parada" para montar uma viagem com várias etapas.</div>';
+    }
+  }
+}
+
+function abreDestino(){
+  $('destInput').value = '';
+  modoLista = 'paradas';
+  dica(viagem ? 'Toque numa parada para ir direto a ela.' :
+       'Com internet, ele calcula a distância real da estrada. Sem internet, cole um link do Maps com as coordenadas.');
+  renderCorpo();
+  $('viagemResumo').innerHTML = viagem && totalRestante()
+    ? 'Faltam <b>'+Math.round(totalRestante())+'</b> km' : '';
+  $('destSheet').hidden = false;
 }
 
 function coordsDoTexto(t){
@@ -775,7 +870,7 @@ function coordsDoTexto(t){
     /@(-?\d+\.\d+),\s*(-?\d+\.\d+)/,
     /!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/,
     /[?&](?:q|destination|daddr)=(-?\d+\.\d+),\s*(-?\d+\.\d+)/,
-    /^\s*(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)\s*$/
+    /(-?\d{1,3}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)/
   ];
   for(const re of p){
     const m = t.match(re);
@@ -784,49 +879,126 @@ function coordsDoTexto(t){
   return null;
 }
 
-$('destRow').addEventListener('click', abreDestino);
-$('destClose').addEventListener('click', () => { $('destSheet').hidden = true; });
-$('destSheet').addEventListener('click', e => { if(e.target.id === 'destSheet') $('destSheet').hidden = true; });
-$('destClear').addEventListener('click', () => {
-  destino = null; salvaDestino(); $('destSheet').hidden = true;
-});
-
-$('destSet').addEventListener('click', () => {
+// transforma o que está no campo em um ponto {nome,lat,lon} e devolve no callback
+function resolveEntrada(cb){
   const txt = $('destInput').value.trim();
-  if(!txt) return;
+  if(!txt){ dica('Escreva ou cole alguma coisa no campo acima.'); return; }
 
   const c = coordsDoTexto(txt);
   if(c){
-    const nome = (txt.match(/maps\/place\/([^\/@]+)/) || [])[1];
-    defineDestino(nome ? decodeURIComponent(nome).replace(/\+/g,' ') : 'Destino', c.lat, c.lon);
+    // nome: do link do Maps, ou o que você escreveu junto das coordenadas
+    let nome = (txt.match(/maps\/place\/([^\/@]+)/) || [])[1];
+    nome = nome ? decodeURIComponent(nome).replace(/\+/g,' ') : '';
+    if(!nome){
+      const resto = txt.replace(/https?:\/\/\S+/g,' ').replace(/-?\d+\.\d+/g,' ')
+                       .replace(/[,:;@|]/g,' ').replace(/\s+/g,' ').trim();
+      if(resto.length > 1) nome = resto;
+    }
+    cb({nome: nome || 'Ponto', lat:c.lat, lon:c.lon, fator:null, kmRota:null});
     return;
   }
-
   if(/goo\.gl|maps\.app/.test(txt)){
-    $('destDica').textContent = 'Esse link é encurtado e eu não consigo abrir. Abra ele no Maps, toque em compartilhar, copie o link longo (o que tem @ e números) — ou digite o nome do lugar.';
+    dica('Esse link é encurtado e eu não consigo abrir. Abra no Maps, compartilhe e copie o link longo (com @ e números) — ou digite o nome do lugar.');
     return;
   }
 
-  $('destDica').textContent = 'Procurando…';
+  dica('Procurando…');
+  modoLista = 'busca';
   fetch('https://geocoding-api.open-meteo.com/v1/search?count=5&language=pt&format=json&name=' + encodeURIComponent(txt))
     .then(r => r.json()).then(j => {
       if(!j.results || !j.results.length){
-        $('destDica').textContent = 'Não encontrei esse lugar. Tente outro nome ou cole o link do Maps.';
-        return;
+        dica('Não encontrei esse lugar. Tente outro nome ou cole o link do Maps.');
+        modoLista = 'paradas'; renderCorpo(); return;
       }
-      $('destDica').textContent = 'Toque no lugar certo:';
-      $('destResults').innerHTML = j.results.map((r,i) =>
-        '<div class="res" data-i="'+i+'"><b>'+r.name+'</b><span>'+
-        [r.admin1, r.country].filter(Boolean).join(' · ')+'</span></div>').join('');
-      [...$('destResults').querySelectorAll('.res')].forEach(el => {
+      dica('Toque no lugar certo:');
+      $('destCorpo').innerHTML = j.results.map((r,i) =>
+        '<div class="res" data-busca="'+i+'"><span class="n">◦</span><div class="txt"><b>'+r.name+
+        '</b><span>'+[r.admin1, r.country].filter(Boolean).join(' · ')+'</span></div></div>').join('');
+      $('destCorpo').querySelectorAll('[data-busca]').forEach(el => {
         el.addEventListener('click', () => {
-          const r = j.results[+el.dataset.i];
-          defineDestino(r.name, r.latitude, r.longitude);
+          const r = j.results[+el.dataset.busca];
+          cb({nome:r.name, lat:r.latitude, lon:r.longitude, fator:null, kmRota:null});
         });
       });
     }).catch(() => {
-      $('destDica').textContent = 'Sem internet para procurar pelo nome. Cole um link do Maps com as coordenadas.';
+      dica('Sem internet para procurar pelo nome. Cole um link do Maps com as coordenadas.');
+      modoLista = 'paradas'; renderCorpo();
     });
+}
+
+/* ações da folha */
+$('destRow').addEventListener('click', abreDestino);
+$('destClose').addEventListener('click', () => { $('destSheet').hidden = true; });
+$('destSheet').addEventListener('click', e => { if(e.target.id === 'destSheet') $('destSheet').hidden = true; });
+
+$('destSet').addEventListener('click', () => {
+  resolveEntrada(p => {
+    destino = p; viagem = null;
+    salvaDestino(); buscaRota();
+    $('destSheet').hidden = true;
+  });
+});
+
+$('destAdd').addEventListener('click', () => {
+  resolveEntrada(p => {
+    if(!viagem) viagem = {nome:'Viagem ' + dataCurta(), paradas:[], etapa:0};
+    viagem.paradas.push(p);
+    destino = null;
+    salvaDestino();
+    $('destInput').value = '';
+    modoLista = 'paradas';
+    dica('Parada ' + viagem.paradas.length + ' adicionada. Continue somando ou toque em Fechar.');
+    renderCorpo();
+    buscaRota();
+  });
+});
+
+$('viagemMenu').addEventListener('click', () => {
+  modoLista = modoLista === 'viagens' ? 'paradas' : 'viagens';
+  dica(modoLista === 'viagens' ? 'Toque para carregar. O ✕ apaga.' : '');
+  renderCorpo();
+});
+
+// cliques na lista (paradas, viagens salvas, apagar)
+$('destCorpo').addEventListener('click', e => {
+  const rm = e.target.closest('[data-rm]');
+  if(rm){
+    e.stopPropagation();
+    viagem.paradas.splice(+rm.dataset.rm, 1);
+    if(viagem.etapa >= viagem.paradas.length) viagem.etapa = Math.max(0, viagem.paradas.length-1);
+    if(!viagem.paradas.length) viagem = null;
+    salvaDestino(); renderCorpo(); return;
+  }
+  const del = e.target.closest('[data-del]');
+  if(del){
+    e.stopPropagation();
+    delete viagens[del.dataset.del];
+    salvaDestino(); renderCorpo(); return;
+  }
+  const salvar = e.target.closest('[data-salvar]');
+  if(salvar){
+    const nome = $('destInput').value.trim();
+    if(nome) viagem.nome = nome;
+    viagens['v'+Date.now()] = JSON.parse(JSON.stringify(viagem));
+    salvaDestino();
+    dica('Viagem "'+viagem.nome+'" salva.');
+    $('destInput').value = '';
+    renderCorpo(); return;
+  }
+  const carregar = e.target.closest('[data-id]');
+  if(carregar){
+    viagem = JSON.parse(JSON.stringify(viagens[carregar.dataset.id]));
+    viagem.etapa = 0; destino = null;
+    salvaDestino();
+    modoLista = 'paradas';
+    dica('Viagem carregada.');
+    renderCorpo(); buscaRota(); return;
+  }
+  const etapa = e.target.closest('[data-etapa]');
+  if(etapa){
+    viagem.etapa = +etapa.dataset.etapa;
+    salvaDestino(); renderCorpo(); buscaRota();
+  }
 });
 
 /* ---------- histórico de deslocamento ---------- */
@@ -893,7 +1065,7 @@ const wmo = {
 function pintaClima(d, offline){
   if(d.temp !== undefined && d.temp !== null) $('wTemp').textContent = Math.round(d.temp)+'°';
   if(d.code !== undefined && d.code !== null){
-    $('wDesc').textContent = (wmo[d.code] || '—') + (offline ? ' · sem sinal' : '');
+    $('wDesc').textContent = (wmo[d.code] || '—');
   }
   if(d.sunrise) sunrise = new Date(d.sunrise);
   if(d.sunset)  sunset  = new Date(d.sunset);
@@ -947,14 +1119,7 @@ if(navigator.getBattery){
   }).catch(()=>{});
 } else { $('batt').textContent = ''; }
 
-/* ---------- botão Maps ---------- */
-$('mapsBtn').addEventListener('click', function(e){
-  e.preventDefault();
-  window.location.href = 'intent://maps.google.com/maps#Intent;scheme=https;package=com.google.android.apps.maps;end';
-  setTimeout(() => { window.location.href = 'https://www.google.com/maps'; }, 700);
-});
-
-/* ---------- tela sempre acesa + paisagem ---------- */
+/* ---------- tela sempre acesa ---------- */
 let wakeLock = null;
 async function keepAwake(){
   try{ if('wakeLock' in navigator) wakeLock = await navigator.wakeLock.request('screen'); }catch(e){}
@@ -964,7 +1129,7 @@ document.addEventListener('visibilitychange', () => {
   if(document.visibilityState === 'visible'){ keepAwake(); updateSky(); }
 });
 (async () => {
-  try{ if(screen.orientation && screen.orientation.lock) await screen.orientation.lock('landscape'); }catch(e){}
+  try{ if(screen.orientation && screen.orientation.lock) await screen.orientation.lock('portrait'); }catch(e){}
 })();
 
 /* ---------- relógios internos ---------- */
@@ -979,6 +1144,7 @@ setInterval(updateSky, 60000);
 if('serviceWorker' in navigator){
   window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
 }
+
 </script>
 </body>
 </html>
